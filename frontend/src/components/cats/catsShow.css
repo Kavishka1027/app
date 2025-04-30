@@ -1,0 +1,109 @@
+/* Root Layout */
+.cat-container {
+    min-height: 100vh;
+    background-color: #f3f4f6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Card Wrapper */
+  .cat-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 1rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-top: 1rem;
+  }
+  
+  /* Title */
+  .cat-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    color: #111827;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Search Box */
+  .cat-search {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Table Wrapper */
+  .cat-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  /* Table Styles */
+  .cat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background-color: #fff;
+  }
+  
+  .cat-table th,
+  .cat-table td {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+  }
+  
+  .cat-table thead {
+    background-color: #f9fafb;
+    color: #374151;
+  }
+  
+  .cat-table tbody tr:hover {
+    background-color: #f3f4f6;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Avatar */
+  .cat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+    border: 2px solid #e5e7eb;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .btn.delete {
+    background-color: #ef4444;
+    color: #fff;
+  }
+  
+  .btn.delete:hover {
+    background-color: #dc2626;
+  }
+  
+  /* No Data Row */
+  .no-data {
+    padding: 2rem;
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+  }
+  

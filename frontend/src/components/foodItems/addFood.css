@@ -1,0 +1,114 @@
+/* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f3f4f6;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.addfood-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.addfood-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+.addfood-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.addfood-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.addfood-form label {
+  font-size: 14px;
+  color: #666;
+}
+
+.addfood-form select,
+.addfood-form input {
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.addfood-form select:focus,
+.addfood-form input:focus {
+  border-color: #5e81f4;
+}
+
+.addfood-form .submit-button {
+  background-color: #5e81f4;
+  color: white;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.addfood-form .submit-button:hover {
+  background-color: #475cda;
+}
+
+.error-message,
+.success-message {
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Make form responsive */
+@media (max-width: 480px) {
+  .addfood-container {
+    padding: 20px;
+    width: 100%;
+  }
+
+  .addfood-container h2 {
+    font-size: 20px;
+  }
+}

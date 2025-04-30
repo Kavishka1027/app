@@ -1,0 +1,104 @@
+.customer-container {
+    padding: 2rem;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .customer-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    overflow-x: auto;
+  }
+  
+  .customer-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  
+  .customer-search {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.2s;
+  }
+  
+  .customer-search:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  .customer-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .customer-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .customer-table th,
+  .customer-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    font-size: 0.95rem;
+    color: #333;
+  }
+  
+  .customer-table th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .customer-table tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .customer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+  }
+  
+  .btn {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+  }
+  
+  .btn.delete {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .btn.delete:hover {
+    background-color: #c0392b;
+  }
+  
+  .no-data {
+    text-align: center;
+    padding: 1rem;
+    color: #999;
+  }
+  

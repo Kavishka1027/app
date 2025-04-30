@@ -1,0 +1,99 @@
+.showfoods-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  font-family: 'Poppins', sans-serif;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.add-food-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-food-button:hover {
+  background-color: #45a049;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.category-section {
+  margin-bottom: 30px;
+}
+
+.food-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.food-table th, .food-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+}
+
+.food-table th {
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+.food-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.food-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: gray;
+}
+
+.action-button {
+  padding: 8px 12px;
+  margin: 2px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.action-button.delete {
+  background-color: #e53935;
+  color: white;
+}
+
+.action-button.update {
+  background-color: #1976d2;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background-color: #d32f2f;
+}
+
+.action-button.update:hover {
+  background-color: #1565c0;
+}
