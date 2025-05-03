@@ -21,6 +21,9 @@ import ShowFoods from "./components/foodItems/showFoods";
 import DietPlan from "./components/dietPlan/dietPlan";
 
 
+import Message from "./components/messages/messages";
+
+
 
 //Dashboards
 import AdminDash from "./components/dashboards/adminDash"
@@ -71,6 +74,9 @@ const App = () => {
 
     //profiles
     {path:'/Me', element: <UserProfile />},
+
+    //messages
+    {path:'/Messages', element: <Message />},
 
 
   ]);

@@ -1,7 +1,7 @@
 const DietPlan = require('../models/dietPlanModel');
 
 // Create a diet plan
-exports.createDietPlan = async (req, res) => {
+const createDietPlan = async (req, res) => {
     try {
         const { petType, weightKg, weightG, ageLevel, activityLevel } = req.body;
 
@@ -22,3 +22,4 @@ exports.createDietPlan = async (req, res) => {
     }
 };
 
+exports.createDietPlan = createDietPlan;

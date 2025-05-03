@@ -1,0 +1,95 @@
+.message-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f4f4f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .receiver-selector {
+    margin-bottom: 20px;
+  }
+  
+  .receiver-selector label {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .receiver-selector select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .message-box {
+    height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  .message {
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+  }
+  
+  .message.sent {
+    background-color: #e6f7ff;
+    text-align: right;
+  }
+  
+  .message.received {
+    background-color: #fff5e6;
+  }
+  
+  .message p {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .message small {
+    display: block;
+    font-size: 0.8rem;
+    color: #888;
+  }
+  
+  .input-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .input-box textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: none;
+    height: 100px;
+    font-size: 1rem;
+    background-color: #fff;
+  }
+  
+  .input-box button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #5c6bc0;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .input-box button:hover {
+    background-color: #3f4eae;
+  }
+  

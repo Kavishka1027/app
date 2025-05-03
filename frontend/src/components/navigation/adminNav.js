@@ -57,6 +57,9 @@ function AdminNav() {
           <li>
             <Link to="/Me" className="nav-link">My profile</Link>
           </li>
+          <li>
+            <Link to="/Messages" className="nav-link">Messages</Link>
+          </li>
         </ul>
       </nav>
     </div>
