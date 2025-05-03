@@ -22,26 +22,26 @@ const RegisterForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
 
-  const generateRoleId = (role) => {
-    const timestamp = Date.now().toString().slice(-4);
-    let prefix = '';
+  // const generateRoleId = (role) => {
+  //   const timestamp = Date.now().toString().slice(-4);
+  //   let prefix = '';
 
-    switch (parseInt(role)) {
-      case 1: prefix = 'ADM'; break;
-      case 2: prefix = 'MAN'; break;
-      case 3: prefix = 'VET'; break;
-      case 4: prefix = 'CUS'; break;
-      default: prefix = 'USR';
-    }
-    return `${prefix}${timestamp}`;
-  };
+  //   switch (parseInt(role)) {
+  //     case 1: prefix = 'ADM'; break;
+  //     case 2: prefix = 'MAN'; break;
+  //     case 3: prefix = 'VET'; break;
+  //     case 4: prefix = 'CUS'; break;
+  //     default: prefix = 'USR';
+  //   }
+  //   return `${prefix}${timestamp}`;
+  // };
 
-  useEffect(() => {
-    if (formData.role) {
-      const newRoleId = generateRoleId(formData.role);
-      setFormData((prev) => ({ ...prev, roleId: newRoleId }));
-    }
-  }, [formData.role]);
+ //useEffect(() => {
+  //   if (formData.role) {
+  //     const newRoleId = generateRoleId(formData.role);
+  //     setFormData((prev) => ({ ...prev, roleId: newRoleId }));
+  //   }
+  // }, [formData.role]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -89,11 +89,23 @@ const RegisterForm = () => {
     if (!validateForm()) return;
 
     try {
+      const submissionData = {
+        ...formData,
+        AId: String(formData.AId),
+        phone: Number(formData.phone),
+        role: Number(formData.role),
+        rewards: formData.role === "4" ? Number(formData.rewards || 0) : undefined,
+        AdminID: formData.role === "1" ? formData.roleId : undefined,
+        ManagerID: formData.role === "2" ? formData.roleId : undefined,
+        VeterinarianID: formData.role === "3" ? formData.roleId : undefined,
+        CustomerID: formData.role === "4" ? formData.roleId : undefined,
+      };
+
       // Check if email, NIC, or phone already exist
-      const checkResponse = await fetch(`http://localhost:5000/api/users/check`, {
+      const checkResponse = await fetch(`http://localhost:5000/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, AId: formData.AId, phone: formData.phone }),
+        body: JSON.stringify(submissionData),
       });
 
       const checkResult = await checkResponse.json();
@@ -107,18 +119,11 @@ const RegisterForm = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/users/register", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
+      if (checkResponse.status === 201) {
         alert('Registration successful!');
-        window.location.reload();
+        window.location.href = '/login';  // Navigate to the login page
       } else {
-        setError(result.message || 'Registration failed');
+        setError(checkResult.message || 'Registration failed');
       }
     } catch (err) {
       setError('Error connecting to server');
@@ -140,7 +145,7 @@ const RegisterForm = () => {
 
         <div className="form-group">
           <label>Role ID:</label>
-          <input type="text" name="roleId" value={formData.roleId} readOnly />
+          <input type="text" name="roleId" onChange={handleChange} required />
         </div>
 
         <div className="form-group">

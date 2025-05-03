@@ -28,14 +28,17 @@ app.use(session({
   cookie: { secure: false },  // Change to true if using HTTPS
 }));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.json({ limit: "20mb" }));
+app.use(express.urlencoded({ limit: "20mb", extended: true }));
 
 // Routes
 app.use("/api/users", userRoute);
 app.use("/api/pets", petRoute);
 app.use("/api/foods", foodItemsRoute);
 app.use('/api/dietPlan', dietPlanRoute);
+
+app.use('/api/sellItem', sellItemRoute);
 
 // Default route
 app.get('/', (req, res) => {
@@ -44,9 +47,10 @@ app.get('/', (req, res) => {
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb+srv://dushan:dushan12345@cluster0.2usapid.mongodb.net/")
+  .connect("mongodb+srv://root:root@cluster1.xycb3.mongodb.net/myDatabase")
   .then(() => {
     console.log("Connected to MongoDB");
     app.listen(5000, () => console.log("Server running on port 5000"));
   })
   .catch((err) => console.error("MongoDB connection error:", err));
+ 
