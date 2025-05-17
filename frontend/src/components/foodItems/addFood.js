@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import Navigation from "../navigation/adminNav"
 import './addFood.css';
+
 
 const AddFood = () => {
   const [formData, setFormData] = useState({
@@ -107,18 +109,19 @@ const AddFood = () => {
 
   return (
     <div className="addfood-container">
-      <h2>Add New Food Item</h2>
+      <Navigation/>
+      
       <form onSubmit={handleSubmit} className="addfood-form">
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
-
+        <h2>Add New Food Item</h2>
         <div className="form-group">
           <label>Category:</label>
           <select name="category" value={formData.category} onChange={handleChange} required>
             <option value="">Select Category</option>
             <option value="Meat">Meat</option>
             <option value="Vegetables">Vegetables</option>
-            <option value="Milk">Milk</option>
+            <option value="Milk">Milk Products</option>
             <option value="Fruits">Fruits</option>
           </select>
         </div>

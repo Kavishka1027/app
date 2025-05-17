@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './adminNav.css'; 
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./adminNav.css";
 
 function AdminNav() {
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -14,48 +14,195 @@ function AdminNav() {
       <nav className="nav-container">
         <ul className="nav-list">
           <li>
-            <Link to="/adminDash" className="nav-link">Home</Link>
+            <Link to="/adminDash" className="nav-link">
+              Dashboard
+            </Link>
           </li>
 
           <li>
-            <button onClick={() => toggleDropdown('pets')} className="nav-link dropdown-btn">Pets ▾</button>
-            {activeDropdown === 'pets' && (
+            <button
+              onClick={() => toggleDropdown("register")}
+              className="nav-link dropdown-btn"
+            >
+              Register ▾
+            </button>
+            {activeDropdown === "register" && (
               <ul className="dropdown-list">
-                <li><Link to="/dogs" className="nav-link">Dogs</Link></li>
-                <li><Link to="/cats" className="nav-link">Cats</Link></li>
+                <li>
+                  <Link to="/userRegister" className="nav-link">
+                    Users
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/petRegister" className="nav-link">
+                    Pets
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("pets")}
+              className="nav-link dropdown-btn"
+            >
+              Pets ▾
+            </button>
+
+            {activeDropdown === "pets" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/dogs" className="nav-link">
+                    Dogs
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/cats" className="nav-link">
+                    Cats
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("users")}
+              className="nav-link dropdown-btn"
+            >
+              Users ▾
+            </button>
+            {activeDropdown === "users" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/customers" className="nav-link">
+                    Customers
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/veterinarians" className="nav-link">
+                    Veterinarians
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("dietPlan")}
+              className="nav-link dropdown-btn"
+            >
+              Diet Plan ▾
+            </button>
+            {activeDropdown === "dietPlan" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/addFood" className="nav-link">
+                    Add Food
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/showFoods" className="nav-link">
+                    Food Table
+                  </Link>
+                </li>
               </ul>
             )}
           </li>
 
           <li>
-            <button onClick={() => toggleDropdown('users')} className="nav-link dropdown-btn">Users ▾</button>
-            {activeDropdown === 'users' && (
+            <button
+              onClick={() => toggleDropdown("store")}
+              className="nav-link dropdown-btn"
+            >
+              Online Store ▾
+            </button>
+            {activeDropdown === "store" && (
               <ul className="dropdown-list">
-                <li><Link to="/customers" className="nav-link">Customers</Link></li>
-                <li><Link to="/veterinarians" className="nav-link">Veterinarians</Link></li>
+
+                <li>
+                  <Link to="/viewAllItem" className="nav-link">
+                    View Products
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/viewAllPet" className="nav-link">
+                    View Pets
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/createItem" className="nav-link">
+                    Add Product
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/createPet" className="nav-link">
+                    add Pet
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/availableItems" className="nav-link">
+                    item view customer
+                  </Link>
+                </li>
               </ul>
             )}
           </li>
 
-          <li>
-            <button onClick={() => toggleDropdown('register')} className="nav-link dropdown-btn">Register ▾</button>
-            {activeDropdown === 'register' && (
+
+                      <li>
+            <button
+              onClick={() => toggleDropdown("auction")}
+              className="nav-link dropdown-btn"
+            >
+              Auction ▾
+            </button>
+            {activeDropdown === "auction" && (
               <ul className="dropdown-list">
-                <li><Link to="/adminDash/userRegister" className="nav-link">Users</Link></li>
-           
-                <li><Link to="/addFood" className="nav-link">add foods</Link></li>
-                <li><Link to="/showFoods" className="nav-link">show foods</Link></li>
-                <li><Link to="/petRegister" className="nav-link">Pet Register</Link></li>
 
-
+                <li>
+                  <Link to="/CreateAuction" className="nav-link">
+                    Create Auction
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/AuctionList" className="nav-link">
+                    Auction List
+                  </Link>
+                </li>
+            
+          
               </ul>
             )}
           </li>
+
+
+
           <li>
-            <Link to="/" className="nav-link">Logout</Link>
+            <Link to="/" className="nav-link-right">
+              Logout
+            </Link>
           </li>
           <li>
-            <Link to="/Me" className="nav-link">My profile</Link>
+            <Link to="/MyProfile" className="nav-link-right">
+              My profile
+            </Link>
+          </li>
+            <li>
+            <Link to="/PetProfile" className="nav-link-right">
+              Pet profile
+            </Link>
+          </li>
+          <li>
+            <Link to="/Messages" className="nav-link-right">
+              Messages
+            </Link>
           </li>
         </ul>
       </nav>

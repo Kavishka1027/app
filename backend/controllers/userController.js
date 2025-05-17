@@ -58,7 +58,7 @@ const getAllVeterinarians = async (req, res) => {
 
 //get user by id
 const getUserById = async (req, res, next) => {
-  const id = req.params.id; // Assuming you're passing the user ID in the URL
+  const id = req.params.id;
 
   let user;
   try {
@@ -129,7 +129,6 @@ const addUser = async (req, res) => {
       rewards: role === 4 ? (rewards !== undefined ? rewards : 0) : undefined,
     });
 
-    // Save to DB
     await newUser.save();
 
     res.status(201).json({
@@ -145,7 +144,7 @@ const addUser = async (req, res) => {
 };
 
 //update user
-const updateUser = async (req, res, next) => {
+const updateUser = async (req, res) => {
   const {
     firstname,
     lastname,
@@ -158,57 +157,59 @@ const updateUser = async (req, res, next) => {
     password,
     currentPassword,
   } = req.body;
-  const updates = req.params.id;
 
-  if (password) {
-    const user = await User.findById(updates);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (!currentPassword)
-      return res.status(400).json({ message: "Current password required" });
-    if (currentPassword !== user.password)
-      return res.status(401).json({ message: "Incorrect current password" });
-  }
+  const userId = req.params.id;
 
-  if (email || phone) {
-    const existingUser = await User.findOne({
-      $or: [
-        ...(email ? [{ email: email.toLowerCase().trim() }] : []),
-        ...(phone ? [{ phone }] : []),
-      ],
-      _id: { $ne: updates },
-    });
-    if (existingUser) {
-      return res.status(400).json({
-        message:
-          existingUser.email === email?.toLowerCase()?.trim()
-            ? "Email already exists"
-            : "Phone number already exists",
-      });
-    }
-  }
-
-  let users;
   try {
-    users = await User.findByIdAndUpdate(updates, {
-      firstname: firstname,
-      lastname: lastname,
-      gender: gender,
-      address: address,
-      dob: dob,
-      email: email,
-      phone: phone,
-      image: image,
-      password: password,
-    });
-    users = await users.save();
-  } catch (err) {
-    console.log("Error updating user!", err);
-  }
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-  if (!users) {
+    // Handle password change logic
+    if (password) {
+      if (!currentPassword)
+        return res.status(400).json({ message: "Current password required" });
+      if (currentPassword !== user.password)
+        return res.status(401).json({ message: "Incorrect current password" });
+
+      user.password = password;
+    }
+
+    if (email || phone) {
+      const existingUser = await User.findOne({
+        $or: [
+          ...(email ? [{ email: email.toLowerCase().trim() }] : []),
+          ...(phone ? [{ phone }] : []),
+        ],
+        _id: { $ne: userId },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          message:
+            existingUser.email === email?.toLowerCase()?.trim()
+              ? "Email already exists"
+              : "Phone number already exists",
+        });
+      }
+    }
+
+    // Apply updates
+    user.firstname = firstname ?? user.firstname;
+    user.lastname = lastname ?? user.lastname;
+    user.gender = gender ?? user.gender;
+    user.address = address ?? user.address;
+    user.dob = dob ?? user.dob;
+    user.email = email?.toLowerCase().trim() ?? user.email;
+    user.phone = phone ?? user.phone;
+    user.image = image ?? user.image;
+
+    const updatedUser = await user.save();
+    return res.status(200).json({ user: updatedUser });
+  } catch (err) {
+    console.error("Error updating user:", err);
     return res.status(500).json({ message: "Unable to update user" });
   }
-  return res.status(200).json({ users });
 };
 
 // User Login with Session
@@ -233,7 +234,6 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ err: "Incorrect password" });
     }
 
-    // Store user info in session
     req.session.user = {
       id: user._id,
       role: user.role,
@@ -271,7 +271,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Get Logged-in User Profile
 const getLoggedInUser = async (req, res) => {
   if (!req.session.user) {
@@ -281,7 +280,7 @@ const getLoggedInUser = async (req, res) => {
   const userId = req.session.user.id;
 
   try {
-    const user = await User.findById(userId).select('-password'); // Hide password
+    const user = await User.findById(userId).select("-password"); // Hide password
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -307,56 +306,7 @@ const logoutUser = (req, res) => {
   });
 };
 
-// Send forgot password link
-exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ message: "No user found with that email" });
 
-    // Generate reset token
-    const token = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiry
-    await user.save();
-
-    const resetUrl = `http://localhost:3000/reset-password/${token}`;
-    await sendEmail(
-      user.email,
-      "Password Reset",
-      `Click here to reset your password: ${resetUrl}`
-    );
-
-    res.status(200).json({ message: "Password reset link sent to your email" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
-
-// Reset password using token
-exports.resetPassword = async (req, res) => {
-  const { password } = req.body;
-  const { token } = req.params;
-  try {
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
-    if (!user)
-      return res.status(400).json({ message: "Invalid or expired token" });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-
-    await user.save();
-    res.status(200).json({ message: "Password successfully reset" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error });
-  }
-};
 
 //delete user
 const deleteUser = async (req, res, next) => {
@@ -389,5 +339,3 @@ exports.addUser = addUser;
 exports.loginUser = loginUser;
 exports.logoutUser = logoutUser;
 exports.getLoggedInUser = getLoggedInUser;
-
-

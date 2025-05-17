@@ -4,35 +4,51 @@ import dayjs from "dayjs";
 import "./petRegister.css";
 
 const PetRegistrationForm = () => {
-  const [type, setType] = useState("");
-  const [petId, setPetId] = useState("");
   const [useDOB, setUseDOB] = useState(true);
   const [dob, setDob] = useState("");
   const [age, setAge] = useState({ years: "", months: "", days: "" });
   const [calculatedDOB, setCalculatedDOB] = useState("");
   const [calculatedAge, setCalculatedAge] = useState("");
+  const [imagePreview, setImagePreview] = useState(null);
+  const [qrCodeData, setQrCodeData] = useState("");
+  const qrCodeRef = useRef();
+  const [error, setError] = useState("");
+
   const [formData, setFormData] = useState({
+    petType: "",
+    petId: "",
     name: "",
     breed: "",
     donorID: "",
     donorName: "",
     donatedDate: dayjs().format("YYYY-MM-DD"),
-    healthStatus: "normal",
-    status: "in care center",
-    ownerID: "",
-    ownerName: "",
+    healthStatus: "UnderTreatment",
+    status: "InCareCenter",
     image: null,
   });
 
-  const [qrCodeData, setQrCodeData] = useState("");
-  const qrCodeRef = useRef();
+  const generatePetId = (petType) => {
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}${now.getDate().toString().padStart(2, "0")}${now
+      .getHours()
+      .toString()
+      .padStart(2, "0")}${now.getMinutes().toString().padStart(2, "0")}${now
+      .getSeconds()
+      .toString()
+      .padStart(2, "0")}`.slice(-5);
+
+    const prefix = petType === "Dog" ? "DOG" : petType === "Cat" ? "CAT" : "PET";
+    return `${prefix}${timestamp}`;
+  };
 
   useEffect(() => {
-    if (type) {
-      const random = Math.floor(100 + Math.random() * 900);
-      setPetId(`${type}${random}`);
+    if (formData.petType) {
+      const newPetId = generatePetId(formData.petType);
+      setFormData((prev) => ({ ...prev, petId: newPetId }));
     }
-  }, [type]);
+  }, [formData.petType]);
 
   useEffect(() => {
     if (useDOB && dob) {
@@ -57,54 +73,86 @@ const PetRegistrationForm = () => {
     }
   }, [age, useDOB]);
 
-  // Automatically generate QR code when petId is set
   useEffect(() => {
-    if (petId) {
+    if (formData.petId) {
       const timer = setTimeout(() => {
-        const canvas = qrCodeRef.current?.querySelector("canvas");
-        if (canvas) {
-          const base64QR = canvas.toDataURL("image/png");
-          setQrCodeData(base64QR);
+        const svg = qrCodeRef.current?.querySelector("svg");
+        if (svg) {
+          const svgData = new XMLSerializer().serializeToString(svg);
+          const base64 = window.btoa(svgData);
+          setQrCodeData(`data:image/svg+xml;base64,${base64}`);
         }
-      }, 500); // Wait a bit to ensure QR is rendered
+      }, 300);
       return () => clearTimeout(timer);
     }
-  }, [petId]);
+  }, [formData.petId]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData((prev) => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAgeChange = (e) => {
     setAge({ ...age, [e.target.name]: e.target.value });
   };
 
-  const handleImageUpload = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.petType || !formData.name || !formData.breed || !formData.donorID || !formData.donorName) {
+      setError("Please fill all required fields.");
+      return;
+    }
+
+    // Remove base64 headers
+    const trimmedQr = qrCodeData?.replace(/^data:image\/[^;]+;base64,/, "");
+    const trimmedImage = formData.image?.replace(/^data:image\/[^;]+;base64,/, "");
+
     const fullData = {
-      ...formData,
-      type,
-      petId,
+      petType: formData.petType,
+      dogID: formData.petType === "Dog" ? formData.petId : undefined,
+      catID: formData.petType === "Cat" ? formData.petId : undefined,
+      name: formData.name,
+      breed: formData.breed,
       dob: useDOB ? dob : calculatedDOB,
-      age: useDOB ? calculatedAge : `${age.years}y-${age.months}m-${age.days}d`,
+      age: useDOB
+        ? {
+            years: age.years,
+            months: age.months,
+            days: age.days,
+          }
+        : {
+            years: age.years,
+            months: age.months,
+            days: age.days,
+          },
+      donorId: formData.donorID,
+      donorName: formData.donorName,
+      donatedDate: formData.donatedDate,
+      healthStatus: formData.healthStatus,
+      status: formData.status,
+      qrCode: trimmedQr,
+      image: trimmedImage,
     };
-
-    const payload = new FormData();
-    Object.keys(fullData).forEach((key) => {
-      if (fullData[key]) payload.append(key, fullData[key]);
-    });
-
-    if (qrCodeData) payload.append("qrCodeData", qrCodeData);
 
     try {
       const response = await fetch("http://localhost:5000/api/pets/petRegister", {
         method: "POST",
-        body: payload,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(fullData),
       });
 
       const result = await response.json();
@@ -119,121 +167,117 @@ const PetRegistrationForm = () => {
     }
   };
 
+  const getFormTitle = () => {
+    return formData.petType === "Dog"
+      ? "Dog Registration"
+      : formData.petType === "Cat"
+      ? "Cat Registration"
+      : "Pet Registration";
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="form-container">
-      <h2 className="form-title">Register Pet</h2>
+    <div className="register-background">
+      <div className="register-container">
+        <h2>{getFormTitle()}</h2>
+        <form onSubmit={handleSubmit} className="form-container">
+          {error && <div className="error-message">{error}</div>}
 
-      {/* Pet Type */}
-      <div className="radio-group">
-        <label className="label">Pet Type:</label>
-        <select value={type} onChange={(e) => setType(e.target.value)} className="select" required>
-          <option value="">Choose Pet Type</option>
-          <option value="DOG">Dog</option>
-          <option value="CAT">Cat</option>
-        </select>
-      </div>
+          <div className="type-selection">
+            <button type="button" className="type-button" onClick={() => setFormData((prev) => ({ ...prev, petType: "Dog" }))}>Dog</button>
+            <button type="button" className="type-button" onClick={() => setFormData((prev) => ({ ...prev, petType: "Cat" }))}>Cat</button>
+          </div>
 
-      <div>
-        <label className="label">Pet ID:</label>
-        <input type="text" value={petId} readOnly className="input" />
-      </div>
+          <div className="form-group" align="center">
+            <label>Pet ID: {formData.petId}</label>
+          </div>
 
-      <div className="grid-container">
-        <input name="name" placeholder="Name" onChange={handleChange} className="input" required />
-        <input name="breed" placeholder="Breed" onChange={handleChange} className="input" required />
-      </div>
+          <div className="grid-container">
+            <input name="name" placeholder="Name" onChange={handleChange} className="input" required />
+            <input name="breed" placeholder="Breed" onChange={handleChange} className="input" required />
+          </div>
 
-      {/* DOB or Age */}
-      <div>
-        <label className="label">Choose to input:</label>
-        <div className="radio-group">
-          <label className="radio-label">
-            <input type="radio" checked={useDOB} onChange={() => setUseDOB(true)} /> DOB
-          </label>
-          <label className="radio-label">
-            <input type="radio" checked={!useDOB} onChange={() => setUseDOB(false)} /> Age
-          </label>
-        </div>
+          <label className="label">Choose to input:</label>
+          <div className="radio-group">
+            <label>
+              <input type="radio" checked={useDOB} onChange={() => setUseDOB(true)} /> Birthday
+            </label>
+            <label>
+              <input type="radio" checked={!useDOB} onChange={() => setUseDOB(false)} /> Age
+            </label>
+          </div>
 
-        {useDOB ? (
+          {useDOB ? (
+            <div>
+              <label className="label">DOB:</label>
+              <input
+                type="date"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                className="input"
+                required
+              />
+              {calculatedAge && <p className="text-sm">Age: {calculatedAge}</p>}
+            </div>
+          ) : (
+            <div className="age-inputs">
+              <input name="years" placeholder="Years" type="number" value={age.years} onChange={handleAgeChange} className="input" required />
+              <input name="months" placeholder="Months" type="number" value={age.months} onChange={handleAgeChange} className="input" required />
+              <input name="days" placeholder="Days" type="number" value={age.days} onChange={handleAgeChange} className="input" required />
+              {calculatedDOB && <p className="text-sm">DOB: {calculatedDOB}</p>}
+            </div>
+          )}
+
+          <div className="grid-container">
+            <input name="donorID" placeholder="Donor ID" onChange={handleChange} className="input" required />
+            <input name="donorName" placeholder="Donor Name" onChange={handleChange} className="input" required />
+          </div>
+
           <div>
-            <label className="label">DOB:</label>
+            <label className="label">Donated Date:</label>
             <input
               type="date"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
+              name="donatedDate"
+              value={formData.donatedDate}
+              onChange={handleChange}
               className="input"
               required
             />
-            {calculatedAge && <p className="text-sm">Age: {calculatedAge}</p>}
           </div>
-        ) : (
-          <div className="grid-container">
-            <input name="years" placeholder="Years" type="number" value={age.years} onChange={handleAgeChange} className="input" required />
-            <input name="months" placeholder="Months" type="number" value={age.months} onChange={handleAgeChange} className="input" required />
-            <input name="days" placeholder="Days" type="number" value={age.days} onChange={handleAgeChange} className="input" required />
-            {calculatedDOB && <p className="text-sm">DOB: {calculatedDOB}</p>}
+
+          <div className="form-group">
+            <label className="label">Health Status:</label>
+            <select name="healthStatus" value={formData.healthStatus} onChange={handleChange} className="select">
+              <option value="Normal">Normal</option>
+              <option value="UnderTreatment">Under Treatments</option>
+            </select>
           </div>
-        )}
-      </div>
 
-      {/* Donor Info */}
-      <div className="grid-container">
-        <input name="donorID" placeholder="Donor ID" onChange={handleChange} className="input" required />
-        <input name="donorName" placeholder="Donor Name" onChange={handleChange} className="input" required />
-      </div>
+          <div className="form-group">
+            <label className="label">Status:</label>
+            <select name="status" value={formData.status} onChange={handleChange} className="select">
+              <option value="InCareCenter">In Care Center</option>
+              <option value="ReadytoSell">Ready to Sell</option>
+              <option value="Auctioned">Auctioned</option>
+              <option value="Reserved">Reserved</option>
+              <option value="Adopted">Adopted</option>
+              <option value="Dead">Dead</option>
+            </select>
+          </div>
 
-      {/* Donated Date */}
-      <div>
-        <label className="label">Donated Date:</label>
-        <input
-          type="date"
-          name="donatedDate"
-          value={formData.donatedDate}
-          onChange={handleChange}
-          className="input"
-          required
-        />
-      </div>
+          <div className="form-group">
+            <label>Upload Image:</label>
+            <input type="file" name="image" accept="image/*" onChange={handleChangeImage} />
+            {imagePreview && <img src={imagePreview} alt="Preview" className="preview-img" />}
+          </div>
 
-      {/* Health and Status */}
-      <div className="grid-container">
-        <select name="healthStatus" onChange={handleChange} className="select">
-          <option value="normal">Normal</option>
-          <option value="under treatments">Under Treatments</option>
-        </select>
-        <select name="status" onChange={handleChange} className="select">
-          <option value="in care center">In Care Center</option>
-          <option value="ready to sell">Ready to Sell</option>
-          <option value="Auctioned">Auctioned</option>
-          <option value="reserved">Reserved</option>
-          <option value="adopted">Adopted</option>
-          <option value="Dead">Dead</option>
-        </select>
-      </div>
+          <div className="form-group" ref={qrCodeRef}>
+            {formData.petId && <QRCode value={formData.petId} size={150} />}
+          </div>
 
-      {/* Owner Info */}
-      <div className="grid-container">
-        <input name="ownerID" placeholder="Owner ID" onChange={handleChange} className="input" />
-        <input name="ownerName" placeholder="Owner Name" onChange={handleChange} className="input" />
+          <button type="submit" className="submit-btn">Register Pet</button>
+        </form>
       </div>
-
-      {/* Image Upload */}
-      <div>
-        <label className="label">Upload Image:</label>
-        <input type="file" onChange={handleImageUpload} className="file-input" />
-      </div>
-
-      {/* QR Code */}
-      <div className="qr-code-container">
-        <label className="label">QR Code:</label>
-        <div ref={qrCodeRef}>
-          <QRCode value={petId || "sample"} size={128} />
-        </div>
-      </div>
-
-      <button type="submit" className="submit-btn">Register Pet</button>
-    </form>
+    </div>
   );
 };
 

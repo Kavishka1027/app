@@ -5,20 +5,18 @@ const authenticateUser = require("../middlewares/authenticateUser");
 
 const userModel = require("../models/userModel");
 const userController = require("../controllers/userController");
-const { forgotPassword, resetPassword } = require('../controllers/userController');
+
 
 // Routes for handling users
 router.get("/", userController.getAllUsers);
 router.get("/customers", userController.getAllCustomers);
 router.get("/veterinarians", userController.getAllVeterinarians);
-router.put("/:id", userController.updateUser);
+router.put("/update/:id", userController.updateUser);
 router.get("/:id", userController.getUserById);
 router.delete("/:id", userController.deleteUser);
 
 // Authentication routes
 router.post("/login", userController.loginUser);
-router.post('/forgotPassword', forgotPassword);
-router.post('/reset-password/:token', resetPassword);
 router.post("/logout", userController.logoutUser);
 
 // User registration route

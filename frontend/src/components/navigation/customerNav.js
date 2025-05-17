@@ -1,36 +1,78 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // For navigation
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./customerNav.css";
 
+function AdminNav() {
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
-function ManagerNav() {
+  const toggleDropdown = (menu) => {
+    setActiveDropdown((prev) => (prev === menu ? null : menu));
+  };
 
   return (
-    <div>
-      <nav style={{ backgroundColor: '#333', padding: '10px' }}>
-        <ul style={{ display: 'flex', listStyle: 'none', justifyContent: 'space-around', margin: 0, padding: 0 }}>
-        <li>
-            <Link to="/customerDash" style={linkStyle}>home</Link>
-          </li>
+    <div className="admin-nav">
+      <nav className="nav-container">
+        <ul className="nav-list">
           <li>
-            <Link to="/Me" style={linkStyle}>my profile</Link>
+            <Link to="/adminDash" className="nav-link">
+              Dashboard
+            </Link>
           </li>
 
           <li>
-            <Link to="/DietPlan" style={linkStyle}>Diet Plan</Link>
+            <button
+              onClick={() => toggleDropdown("pets")}
+              className="nav-link dropdown-btn"
+            >
+              My Pets ▾
+            </button>
+
+            {activeDropdown === "pets" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/" className="nav-link">
+                    Dogs
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/" className="nav-link">
+                    Cats
+                  </Link>
+                </li>
+              </ul>
+            )}
           </li>
-      
+            <li>
+            <Link to="/DietPlan" className="nav-link-right">
+              Diet Plan
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/" className="nav-link-right">
+              Online Store
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/" className="nav-link-right">
+              Logout
+            </Link>
+          </li>
+          <li>
+            <Link to="/MyProfile" className="nav-link-right">
+              My profile
+            </Link>
+          </li>
+          <li>
+            <Link to="/Messages" className="nav-link-right">
+              Messages
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
   );
 }
 
-const linkStyle = {
-  color: 'white',
-  textDecoration: 'none',
-  fontSize: '18px',
-  padding: '8px 16px',
-  borderRadius: '4px',
-};
-
-export default ManagerNav;
+export default AdminNav;

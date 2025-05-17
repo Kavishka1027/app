@@ -6,7 +6,7 @@ const sellItemSchema = new Schema({
     itemId: { type: String, required: true, unique: true },
     brand: { type: String, required: true },
     name: { type: String, required: true },
-    category: { type: String, required: false },
+    category: { type: String, required: true,  enum: ['Dog', 'Cat']},
     quantity: { type: Number, required: true },
     expDate: { type: Date, required: false },
     manufactureDate: { type: Date, required: false },

@@ -77,6 +77,30 @@ const getAvailableDogs = async (req, res) => {
     }
 };
 
+//delete item
+const deleteItem = async (req, res, next) => {
+  const id = req.params.id;
+
+  let item;
+  try {
+    item = await sellItemModel.findOneAndDelete(id);
+  } catch (err) {
+    console.error("Error deleting Item!", err);
+    return res
+      .status(500)
+      .json({ message: "Server error while deleting item" });
+  }
+
+  if (!item) {
+    return res.status(404).json({ message: "Item not found!" });
+  }
+
+  return res.status(200).json({ message: "Item deleted successfully" });
+};
+
+
+
+
 
 
 
@@ -86,3 +110,5 @@ exports.createSellItem = createSellItem;
 //for user
 exports.getAvailableItemsByType = getAvailableItemsByType;
 exports.getAvailableDogs = getAvailableDogs;
+
+exports.deleteItem = deleteItem;

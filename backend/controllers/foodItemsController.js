@@ -24,7 +24,6 @@ const addFoodItem = async (req, res) => {
       caloriesPer100g,
     });
 
-    // Save to DB
     await newFoodItem.save();
 
     res.status(201).json({
@@ -85,6 +84,25 @@ const getFoodByID = async (req, res) => {
   }
   return res.status(200).json({ food });
 };
+
+const getRandomFoods = async (req, res) => {
+  try {
+    const foods = await FoodItem.aggregate([{ $sample: { size: 7 } }]);
+
+    if (!foods || foods.length === 0) {
+      return res.status(404).json({ message: "No food items found" });
+    }
+
+    return res.status(200).json({ foods });
+  } catch (err) {
+    console.error("Error fetching random foods:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+
 
 const generateWeeklyDietPlan = async (req, res) => {
   try {
@@ -223,3 +241,4 @@ exports.getFoodByID = getFoodByID;
 exports.updateFood = updateFood;
 exports.deleteFood = deleteFood;
 exports.generateWeeklyDietPlan = generateWeeklyDietPlan;
+exports.getRandomFoods = getRandomFoods

@@ -1,55 +1,120 @@
-/* Main container */
-.navigation-container {
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-  }
-  
-  /* Title */
-  .navigation-title {
-    margin: 0 0 1rem 0;
-    color: #212529;
-    font-size: 1.5rem;
-    font-weight: 500;
-  }
-  
-  /* Navigation menu */
-  .navigation-menu {
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* List styling */
-  .navigation-list {
-    display: flex;
-    gap: 1.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* List items */
-  .navigation-item {
-    margin: 0;
-  }
-  
-  /* Links */
-  .navigation-link {
-    text-decoration: none;
-    color: #495057;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-weight: 500;
-  }
-  
-  .navigation-link:hover {
-    background-color: #e9ecef;
-    color: #0d6efd;
-  }
-  
-  /* Active link state (optional) */
-  .navigation-link.active {
-    background-color: #0d6efd;
-    color: white;
-  }
+/* Base Navbar */
+.admin-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Flex container for alignment */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+/* Navigation list */
+.nav-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0;
+  margin: 0;
+}
+
+/* General nav styles */
+.nav-link,
+.nav-link-right,
+.dropdown-btn {
+  text-decoration: none;
+  color: #444;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.nav-link:hover,
+.nav-link-right:hover,
+.dropdown-btn:hover {
+  background-color: #e4e4e4;
+  color: #222;
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Dropdown Menu */
+.dropdown-list {
+  position: absolute;
+  background-color: #ffffff;
+  margin-top: 6px;
+  padding: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  z-index: 1001;
+  min-width: 180px;
+}
+
+.dropdown-list li {
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-list .nav-link {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  justify-content: flex-start;
+}
+
+.dropdown-list .nav-link:hover {
+  background-color: #f1f1f1;
+  color: #111;
+}
+
+/* Right-aligned links (like logout, profile, messages) */
+/* Right-aligned nav list */
+.nav-list-right {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+}
+
+/* Right-side link style */
+.nav-link-right {
+  background-color: #f2f2f2; /* Light gray background */
+  color: #555; /* Soft dark gray text */
+  padding: 10px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid #ddd;
+}
+
+.nav-link-right:hover {
+  background-color: #e0e0e0; /* Slightly darker gray on hover */
+  color: #333;
+  transform: scale(1.03);
+}

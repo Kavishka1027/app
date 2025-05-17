@@ -30,7 +30,7 @@ const dietPlanSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-const DietPlan = mongoose.model('DietPlan', dietPlanSchema);
+const DietPlan = mongoose.model('DietPlanModel', dietPlanSchema);
 
 module.exports = DietPlan;
 

@@ -13,8 +13,8 @@ const userSchema = new Schema({
   image: { type: String },
   password: { type: String, required: true },
 
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date },
 
   role: { type: Number, required: true, enum: [1, 2, 3, 4] },
 
@@ -63,6 +63,8 @@ const userSchema = new Schema({
       return this.role === 4;
     },
   },
+
+
 });
 
 module.exports = mongoose.model("userModel", userSchema);

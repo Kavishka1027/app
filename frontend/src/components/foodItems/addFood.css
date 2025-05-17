@@ -1,114 +1,86 @@
-/* General reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f3f4f6;
-  color: #333;
+.addfood-container {
+  min-height: 100vh;
+  padding: 3rem 2rem;
+  background-image: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)),
+    url('./foods.jpg'); /* Replace URL with your own */
+  background-size: cover;
+  background-position: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
-}
-
-.addfood-container {
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  width: 100%;
-  max-width: 450px;
-  text-align: center;
-}
-
-.addfood-container h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #444;
+  flex-direction: column;
+   padding-top: 70px;
 }
 
 .addfood-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.addfood-form .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: flex-start;
-}
-
-.addfood-form label {
-  font-size: 14px;
-  color: #666;
-}
-
-.addfood-form select,
-.addfood-form input {
-  padding: 12px;
-  font-size: 16px;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
   width: 100%;
-  border: 1px solid #ddd;
+}
+
+.addfood-form h2 {
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  outline: none;
-  transition: border-color 0.3s ease;
+  background-color: #f9f9f9;
 }
 
-.addfood-form select:focus,
-.addfood-form input:focus {
-  border-color: #5e81f4;
-}
-
-.addfood-form .submit-button {
-  background-color: #5e81f4;
+.submit-button {
+  width: 100%;
+  background-color: #5c67f2;
   color: white;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 8px;
+  padding: 0.75rem;
   border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  width: 100%;
 }
 
-.addfood-form .submit-button:hover {
-  background-color: #475cda;
+.submit-button:hover {
+  background-color: #4a54e1;
 }
 
 .error-message,
 .success-message {
-  font-size: 14px;
-  padding: 10px;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
   border-radius: 8px;
-  margin-top: 10px;
+  font-weight: bold;
   text-align: center;
 }
 
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #ffe6e6;
+  color: #cc0000;
 }
 
 .success-message {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-/* Make form responsive */
-@media (max-width: 480px) {
-  .addfood-container {
-    padding: 20px;
-    width: 100%;
-  }
-
-  .addfood-container h2 {
-    font-size: 20px;
-  }
+  background-color: #e6ffea;
+  color: #007f3e;
 }

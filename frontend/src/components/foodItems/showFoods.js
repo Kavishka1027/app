@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navigation from "../navigation/adminNav"
 import "./showFoods.css";
 
 const ShowFoods = () => {
@@ -15,7 +16,7 @@ const ShowFoods = () => {
 
   const fetchFoods = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/foods");
+      const response = await fetch("http://localhost:5000/api/foods/foods");
       const data = await response.json();
       setAllFoods(data.foods || []);
     } catch (err) {
@@ -77,6 +78,7 @@ const ShowFoods = () => {
 
   return (
     <div className="showfoods-container">
+      <Navigation/>
       <div className="header-section">
         <h2>Available Food Items</h2>
         <button className="add-food-button" onClick={handleAddFood}>
@@ -102,7 +104,7 @@ const ShowFoods = () => {
                 <th>Food ID</th>
                 <th>Food Name</th>
                 <th>Calories (per 100g)</th>
-                <th>Actions</th> {/* NEW COLUMN */}
+                <th>Actions</th> 
               </tr>
             </thead>
             <tbody>

@@ -1,109 +1,133 @@
-/* Root Layout */
-.dog-container {
-    min-height: 100vh;
-    background-color: #f3f4f6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+.dog-grid-wrapper {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fdfdfd;
+  padding-top: 70px;
   
-  /* Card Wrapper */
-  .dog-card {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 1200px;
-    border-radius: 1rem;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    margin-top: 1rem;
-  }
-  
-  /* Title */
-  .dog-title {
-    font-size: 1.8rem;
-    font-weight: 600;
-    text-align: center;
-    color: #111827;
-    margin-bottom: 1.5rem;
-  }
-  
-  /* Search Box */
-  .dog-search {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-  
-  /* Table Wrapper */
-  .dog-table-wrapper {
-    overflow-x: auto;
-  }
-  
-  /* Table Styles */
-  .dog-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    background-color: #fff;
-  }
-  
-  .dog-table th,
-  .dog-table td {
-    padding: 0.75rem 1rem;
-    border: 1px solid #e5e7eb;
-    text-align: center;
-  }
-  
-  .dog-table thead {
-    background-color: #f9fafb;
-    color: #374151;
-  }
-  
-  .dog-table tbody tr:hover {
-    background-color: #f3f4f6;
-    transition: background-color 0.2s ease;
-  }
-  
-  /* Avatar */
-  .dog-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 9999px;
-    object-fit: cover;
-    display: block;
-    margin: auto;
-    border: 2px solid #e5e7eb;
-  }
-  
-  /* Buttons */
-  .btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border: none;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .btn.delete {
-    background-color: #ef4444;
-    color: #fff;
-  }
-  
-  .btn.delete:hover {
-    background-color: #dc2626;
-  }
-  
-  /* No Data Row */
-  .no-data {
-    padding: 2rem;
-    text-align: center;
-    color: #6b7280;
-    font-style: italic;
-  }
-  
+}
+
+.dog-grid-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #444;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sell-button,
+.release-button {
+  background-color: #5c67f2;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.release-button {
+  background-color: #f25c5c;
+}
+
+.sell-button:hover,
+.release-button:hover {
+  opacity: 0.9;
+}
+
+.filters-section {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  width: 48%;
+}
+
+.filter-group label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.filter-dropdown {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+}
+
+.dog-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.dog-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dog-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.8rem;
+}
+
+.dog-info {
+  text-align: center;
+}
+
+.dog-info h3 {
+  font-size: 1.3rem;
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.dog-info p {
+  margin: 0.3rem 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.dog-info .sell-button {
+  margin-top: 0.7rem;
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}

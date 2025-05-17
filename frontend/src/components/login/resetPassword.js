@@ -1,40 +1,32 @@
-// src/pages/ResetPassword.jsx
+// pages/ResetPassword.tsx
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './resetPassword.css';
+import "./resetPassword.css";
 
-const ResetPassword = () => {
-    const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
-    const { token } = useParams();
+export default function ResetPassword() {
+  const { token } = useParams();
+  const [newPassword, setNewPassword] = useState('');
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const res = await axios.post(`http://localhost:5000/api/users/reset-password/${token}`, { password });
-            setMessage(res.data.message);
-        } catch (err) {
-            setMessage(err.response.data.message || 'Error occurred');
-        }
-    };
+  const handleSubmit = async e => {
+    e.preventDefault();
+    await axios.post(`http://localhost:5000/api/auth/resetPassword/${token}`, { newPassword });
+    alert('Password updated');
+    navigate('/login');
+  };
 
-    return (
-        <div className="auth-container">
-            <h2>Reset Password</h2>
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="password"
-                    placeholder="Enter new password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Reset Password</button>
-            </form>
-            {message && <p>{message}</p>}
-        </div>
-    );
-};
-
-export default ResetPassword;
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Enter New Password</h2>
+      <input
+        type="password"
+        placeholder="New Password"
+        value={newPassword}
+        onChange={e => setNewPassword(e.target.value)}
+        required
+      />
+      <button type="submit">Reset Password</button>
+    </form>
+  );
+}

@@ -24,7 +24,10 @@ const Login = () => {
       const data = await response.json();
 
       if (data.status === "ok") {
-        navigate(data.redirect);
+        // Store user data in localStorage
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        console.log('User logged in:', data.user);
+        navigate(data.redirect); // Redirect to the appropriate dashboard
       } else {
         setError(data.err || "Login failed");
       }

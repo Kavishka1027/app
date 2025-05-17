@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const petRegisterSchema = new Schema({
+const petSchema = new Schema({
   petType: {
     type: String,
     enum: ['Dog', 'Cat'],
@@ -59,16 +59,16 @@ const petRegisterSchema = new Schema({
     default: Date.now,
   },
 
-  healthStatus: {
+  healthStatus: {  
     type: String,
-    enum: ['Normal', 'Under Treatment'],
+    enum: ['Normal', 'UnderTreatment'],
     default: 'Normal',
   },
 
   status: {
     type: String,
-    enum: ['In Care Center', 'Ready to Sell', 'Auctioned', 'Reserved', 'Adopted', 'Dead'],
-    default: 'In Care Center',
+    enum: ['InCareCenter', 'ReadytoSell', 'Auctioned', 'Reserved', 'Adopted', 'Dead'],
+    default: 'InCareCenter',
   },
 
   qrCode: {
@@ -76,7 +76,7 @@ const petRegisterSchema = new Schema({
   },
 
   image: {
-    type: String,
+    type: String, 
     default: 'default.jpg',
   },
 
@@ -92,4 +92,4 @@ const petRegisterSchema = new Schema({
   timestamps: true,
 });
 
-module.exports = mongoose.model('Pet', petRegisterSchema);
+module.exports = mongoose.model('PetModel', petSchema);

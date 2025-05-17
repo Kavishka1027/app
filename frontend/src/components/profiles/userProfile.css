@@ -1,120 +1,159 @@
-/* Reset some default styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Body and Global Styles */
-  body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7fa;
-    color: #333;
-    line-height: 1.6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-  
-  .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  
-  .profile-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    max-width: 400px;
-    margin: auto;
-  }
-  
-  .profile-card img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 20px;
-  }
-  
-  .profile-card h2 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-  }
-  
-  .profile-card p {
-    font-size: 16px;
-    color: #777;
-    margin-bottom: 20px;
-  }
-  
-  .profile-card .info {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-  }
-  
-  .profile-card .info label {
-    font-weight: bold;
-    color: #444;
-  }
-  
-  .profile-card .info .value {
-    color: #555;
-  }
-  
-  .profile-card .btn {
-    background-color: #007bff;
-    color: #fff;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .profile-card .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .profile-card {
-      max-width: 90%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    body {
-      padding: 20px;
-    }
-  
-    .profile-card h2 {
-      font-size: 20px;
-    }
-  
-    .profile-card p {
-      font-size: 14px;
-    }
-  
-    .profile-card .info {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .profile-card .info label {
-      margin-bottom: 5px;
-    }
-  }
-  
+.profile-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f7f9fc;
+  min-height: 100vh;
+  padding-top: 150px;
+}
+
+.profile-content {
+  max-width: 1000px;
+  width: 100%;
+}
+
+.profile-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+  transition: transform 0.3s;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.profile-header h1 {
+  font-size: 32px;
+  color: #333;
+}
+
+.profile-header p {
+  color: #666;
+  margin-top: 5px;
+}
+
+.profile-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.profile-image-section {
+  flex: 1;
+  text-align: center;
+}
+
+.profile-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 4px solid #007bff;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.profile-role {
+  font-weight: 600;
+  color: #555;
+}
+
+.profile-details {
+  flex: 2;
+}
+
+.detail-item {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #444;
+}
+
+.detail-value {
+  color: #777;
+  max-width: 60%;
+  text-align: right;
+}
+
+.btn-change-password {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width: 200px;
+}
+
+.btn-change-password:hover {
+  background-color: #0056b3;
+}
+
+.password-form {
+  margin-top: 25px;
+  background-color: #f1f5fb;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(0, 123, 255, 0.05);
+}
+
+.password-form .form-group {
+  margin-bottom: 18px;
+}
+
+.password-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.password-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border 0.3s;
+}
+
+.password-form input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.btn-submit-password {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-submit-password:hover {
+  background-color: #1e7e34;
+}
+
+.message {
+  margin-top: 12px;
+  font-weight: 500;
+  color: #d9534f;
+}

@@ -1,24 +1,148 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // For navigation
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import "./adminNav.css";
 
+function AdminNav() {
+  const [activeDropdown, setActiveDropdown] = useState(null);
 
-function ManagerNav() {
+  const toggleDropdown = (menu) => {
+    setActiveDropdown((prev) => (prev === menu ? null : menu));
+  };
 
   return (
-    <div>
-      <nav style={{ backgroundColor: '#333', padding: '10px' }}>
-        <ul style={{ display: 'flex', listStyle: 'none', justifyContent: 'space-around', margin: 0, padding: 0 }}>
-        <li>
-            <Link to="/home" style={linkStyle}>man1</Link>
+    <div className="admin-nav">
+      <nav className="nav-container">
+        <ul className="nav-list">
+          <li>
+            <Link to="/adminDash" className="nav-link">
+              Dashboard
+            </Link>
+          </li>
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("register")}
+              className="nav-link dropdown-btn"
+            >
+              Register ▾
+            </button>
+            {activeDropdown === "register" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/userRegister" className="nav-link">
+                    Users
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/petRegister" className="nav-link">
+                    Pets
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("pets")}
+              className="nav-link dropdown-btn"
+            >
+              Pets ▾
+            </button>
+
+            {activeDropdown === "pets" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/dogs" className="nav-link">
+                    Dogs
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/cats" className="nav-link">
+                    Cats
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("users")}
+              className="nav-link dropdown-btn"
+            >
+              Users ▾
+            </button>
+            {activeDropdown === "users" && (
+              <ul className="dropdown-list">
+                <li>
+                  <Link to="/customers" className="nav-link">
+                    Customers
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/veterinarians" className="nav-link">
+                    Veterinarians
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+
+          <li>
+            <button
+              onClick={() => toggleDropdown("store")}
+              className="nav-link dropdown-btn"
+            >
+              Online Store ▾
+            </button>
+            {activeDropdown === "store" && (
+              <ul className="dropdown-list">
+
+                <li>
+                  <Link to="/viewAllItem" className="nav-link">
+                    View Products
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/viewAllPet" className="nav-link">
+                    View Pets
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/createItem" className="nav-link">
+                    Add Product
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/createPet" className="nav-link">
+                    add Pet
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          <li>
+            <Link to="/" className="nav-link-right">
+              Logout
+            </Link>
           </li>
           <li>
-            <Link to="/pets" style={linkStyle}>man2</Link>
+            <Link to="/MyProfile" className="nav-link-right">
+              My profile
+            </Link>
           </li>
+
           <li>
-            <Link to="/customers" style={linkStyle}>man3</Link>
-          </li>
-          <li>
-            <Link to="/veterinarians" style={linkStyle}>man4</Link>
+            <Link to="/Messages" className="nav-link-right">
+              Messages
+            </Link>
           </li>
         </ul>
       </nav>
@@ -26,12 +150,4 @@ function ManagerNav() {
   );
 }
 
-const linkStyle = {
-  color: 'white',
-  textDecoration: 'none',
-  fontSize: '18px',
-  padding: '8px 16px',
-  borderRadius: '4px',
-};
-
-export default ManagerNav;
+export default AdminNav;
