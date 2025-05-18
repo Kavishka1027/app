@@ -48,7 +48,7 @@ function ViewAllItem() {
     const { name, value } = e.target;
     const updatedPriceRange = { ...priceRange, [name]: value };
     setPriceRange(updatedPriceRange);
-    filterItems(searchTerm, selectedType, selectedCategory, updatedPriceRange);
+    filterItems(searchTerm, selectedType, selectedCategory, updatedPriceRange); 
   };
 
   const filterItems = (search, type, category, price) => {
@@ -64,6 +64,7 @@ function ViewAllItem() {
       filtered = filtered.filter((item) =>
         item.itemType?.toLowerCase() === type.toLowerCase()
       );
+
     }
 
     if (category && category !== 'All') {

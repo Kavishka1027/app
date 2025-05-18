@@ -36,6 +36,8 @@ const petSchema = new Schema({
     required: true,
   },
 
+  gender: { type: String, required: true },
+
   dob: {
     type: Date,
   },
@@ -47,7 +49,9 @@ const petSchema = new Schema({
   },
 
   donorId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'CustomerID',
+    required: true
   },
 
   donorName: {

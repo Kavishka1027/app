@@ -122,6 +122,7 @@ const RegisterForm = () => {
     return true;
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -353,7 +354,7 @@ const RegisterForm = () => {
             </div>
           </div>
 
-          {formData.role === "4" && (
+          {/* {formData.role === "4" && (
             <div className="form-group">
               <label>Rewards:</label>
               <input
@@ -363,7 +364,7 @@ const RegisterForm = () => {
                 onChange={handleChange}
               />
             </div>
-          )}
+          )} */}
 
           <button type="submit" className="submit-button">
             Register

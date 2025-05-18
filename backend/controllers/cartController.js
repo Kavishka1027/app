@@ -1,5 +1,5 @@
-const Cart = require('../models/Cart');
-const SellItem = require('../models/SellItem'); // Assuming this is your product model
+const Cart = require('../models/cartModel');
+const SellItem = require('../models/sellItemModel'); // Assuming this is your product model
 
 // Get current user's cart
 exports.getCart = async (req, res) => {

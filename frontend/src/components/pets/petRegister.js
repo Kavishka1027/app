@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import QRCode from "react-qr-code";
 import dayjs from "dayjs";
 import "./petRegister.css";
+import axios from "axios";
 
 const PetRegistrationForm = () => {
   const [useDOB, setUseDOB] = useState(true);
@@ -11,14 +12,17 @@ const PetRegistrationForm = () => {
   const [calculatedAge, setCalculatedAge] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [qrCodeData, setQrCodeData] = useState("");
+  const [rewards, setRewards] = useState(0);
   const qrCodeRef = useRef();
   const [error, setError] = useState("");
+  const [customers, setCustomers] = useState([]);
 
   const [formData, setFormData] = useState({
     petType: "",
     petId: "",
     name: "",
     breed: "",
+    gender: "",
     donorID: "",
     donorName: "",
     donatedDate: dayjs().format("YYYY-MM-DD"),
@@ -26,6 +30,29 @@ const PetRegistrationForm = () => {
     status: "InCareCenter",
     image: null,
   });
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/users/customers"
+        );
+        setCustomers(res.data.customers);
+      } catch (err) {
+        console.error("Error fetching customers:", err);
+      }
+    };
+
+    fetchCustomers();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const generatePetId = (petType) => {
     const now = new Date();
@@ -39,8 +66,51 @@ const PetRegistrationForm = () => {
       .toString()
       .padStart(2, "0")}`.slice(-5);
 
-    const prefix = petType === "Dog" ? "DOG" : petType === "Cat" ? "CAT" : "PET";
+    const prefix =
+      petType === "Dog" ? "DOG" : petType === "Cat" ? "CAT" : "PET";
     return `${prefix}${timestamp}`;
+  };
+
+  // Calculate rewards based on pet type and total days
+  const calculateRewards = (totalDays, petType) => {
+    if (petType === "Dog") {
+      if (totalDays < 365) return 4; // Less than 1 year
+      if (totalDays >= 365 && totalDays < 2555) return 3; // 1-7 years (365*7=2555)
+      return 2; // 7+ years
+    } else if (petType === "Cat") {
+      if (totalDays < 365) return 3; // Less than 1 year
+      if (totalDays >= 365 && totalDays < 3650) return 2; // 1-10 years (365*10=3650)
+      return 1; // 10+ years
+    }
+    return 0;
+  };
+
+  // Calculate total days from years, months, days
+  const calculateTotalDays = (years, months, days) => {
+    return years * 365 + months * 30 + parseInt(days);
+  };
+
+  const handleAgeChange = (e) => {
+    const { name, value } = e.target;
+    // Validate that the input is a positive number
+    if (
+      value === "" ||
+      (Number(value) >= 0 && Number.isInteger(Number(value)))
+    ) {
+      setAge((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleDateChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = dayjs().format("YYYY-MM-DD");
+
+    if (selectedDate <= today) {
+      setDob(selectedDate);
+      setError("");
+    } else {
+      setError("Date of birth cannot be in the future");
+    }
   };
 
   useEffect(() => {
@@ -56,11 +126,19 @@ const PetRegistrationForm = () => {
       const now = dayjs();
       const years = now.diff(birth, "year");
       const months = now.diff(birth.add(years, "year"), "month");
-      const days = now.diff(birth.add(years, "year").add(months, "month"), "day");
+      const days = now.diff(
+        birth.add(years, "year").add(months, "month"),
+        "day"
+      );
+
       setAge({ years, months, days });
       setCalculatedAge(`${years}y-${months}m-${days}d`);
+
+      // Calculate total days and then rewards
+      const totalDays = calculateTotalDays(years, months, days);
+      setRewards(calculateRewards(totalDays, formData.petType));
     }
-  }, [dob, useDOB]);
+  }, [dob, useDOB, formData.petType]);
 
   useEffect(() => {
     if (!useDOB && age.years !== "" && age.months !== "" && age.days !== "") {
@@ -70,8 +148,16 @@ const PetRegistrationForm = () => {
         .subtract(age.months, "month")
         .subtract(age.days, "day");
       setCalculatedDOB(birth.format("YYYY-MM-DD"));
+
+      // Calculate total days and then rewards
+      const totalDays = calculateTotalDays(
+        parseInt(age.years),
+        parseInt(age.months),
+        parseInt(age.days)
+      );
+      setRewards(calculateRewards(totalDays, formData.petType));
     }
-  }, [age, useDOB]);
+  }, [age, useDOB, formData.petType]);
 
   useEffect(() => {
     if (formData.petId) {
@@ -87,10 +173,6 @@ const PetRegistrationForm = () => {
     }
   }, [formData.petId]);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
   const handleChangeImage = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -103,21 +185,36 @@ const PetRegistrationForm = () => {
     }
   };
 
-  const handleAgeChange = (e) => {
-    setAge({ ...age, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.petType || !formData.name || !formData.breed || !formData.donorID || !formData.donorName) {
+    if (
+      !formData.petType ||
+      !formData.name ||
+      !formData.breed ||
+      !formData.donorID ||
+      !formData.gender
+    ) {
       setError("Please fill all required fields.");
+      return;
+    }
+
+    if (useDOB && dob > dayjs().format("YYYY-MM-DD")) {
+      setError("Date of birth cannot be in the future");
+      return;
+    }
+
+    if (!useDOB && (age.years === "" || age.months === "" || age.days === "")) {
+      setError("Please enter valid age values");
       return;
     }
 
     // Remove base64 headers
     const trimmedQr = qrCodeData?.replace(/^data:image\/[^;]+;base64,/, "");
-    const trimmedImage = formData.image?.replace(/^data:image\/[^;]+;base64,/, "");
+    const trimmedImage = formData.image?.replace(
+      /^data:image\/[^;]+;base64,/,
+      ""
+    );
 
     const fullData = {
       petType: formData.petType,
@@ -125,6 +222,7 @@ const PetRegistrationForm = () => {
       catID: formData.petType === "Cat" ? formData.petId : undefined,
       name: formData.name,
       breed: formData.breed,
+      gender: formData.gender,
       dob: useDOB ? dob : calculatedDOB,
       age: useDOB
         ? {
@@ -144,16 +242,20 @@ const PetRegistrationForm = () => {
       status: formData.status,
       qrCode: trimmedQr,
       image: trimmedImage,
+      rewards: rewards,
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/pets/petRegister", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(fullData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/pets/petRegister",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(fullData),
+        }
+      );
 
       const result = await response.json();
       if (response.ok) {
@@ -183,8 +285,24 @@ const PetRegistrationForm = () => {
           {error && <div className="error-message">{error}</div>}
 
           <div className="type-selection">
-            <button type="button" className="type-button" onClick={() => setFormData((prev) => ({ ...prev, petType: "Dog" }))}>Dog</button>
-            <button type="button" className="type-button" onClick={() => setFormData((prev) => ({ ...prev, petType: "Cat" }))}>Cat</button>
+            <button
+              type="button"
+              className="type-button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, petType: "Dog" }))
+              }
+            >
+              Dog
+            </button>
+            <button
+              type="button"
+              className="type-button"
+              onClick={() =>
+                setFormData((prev) => ({ ...prev, petType: "Cat" }))
+              }
+            >
+              Cat
+            </button>
           </div>
 
           <div className="form-group" align="center">
@@ -192,17 +310,53 @@ const PetRegistrationForm = () => {
           </div>
 
           <div className="grid-container">
-            <input name="name" placeholder="Name" onChange={handleChange} className="input" required />
-            <input name="breed" placeholder="Breed" onChange={handleChange} className="input" required />
+            <input
+              name="name"
+              placeholder="Name"
+              onChange={handleChange}
+              className="input"
+              required
+            />
+            <input
+              name="breed"
+              placeholder="Breed"
+              onChange={handleChange}
+              className="input"
+              required
+            />
+          </div>
+
+          <div>
+            <label>Gender:</label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
           </div>
 
           <label className="label">Choose to input:</label>
           <div className="radio-group">
             <label>
-              <input type="radio" checked={useDOB} onChange={() => setUseDOB(true)} /> Birthday
+              <input
+                type="radio"
+                checked={useDOB}
+                onChange={() => setUseDOB(true)}
+              />{" "}
+              Birthday
             </label>
             <label>
-              <input type="radio" checked={!useDOB} onChange={() => setUseDOB(false)} /> Age
+              <input
+                type="radio"
+                checked={!useDOB}
+                onChange={() => setUseDOB(false)}
+              />{" "}
+              Age
             </label>
           </div>
 
@@ -212,24 +366,92 @@ const PetRegistrationForm = () => {
               <input
                 type="date"
                 value={dob}
-                onChange={(e) => setDob(e.target.value)}
+                onChange={handleDateChange}
                 className="input"
+                max={dayjs().format("YYYY-MM-DD")}
                 required
               />
               {calculatedAge && <p className="text-sm">Age: {calculatedAge}</p>}
             </div>
           ) : (
             <div className="age-inputs">
-              <input name="years" placeholder="Years" type="number" value={age.years} onChange={handleAgeChange} className="input" required />
-              <input name="months" placeholder="Months" type="number" value={age.months} onChange={handleAgeChange} className="input" required />
-              <input name="days" placeholder="Days" type="number" value={age.days} onChange={handleAgeChange} className="input" required />
+              <input
+                name="years"
+                placeholder="Years"
+                type="number"
+                min="0"
+                value={age.years}
+                onChange={handleAgeChange}
+                className="input"
+                required
+              />
+              <input
+                name="months"
+                placeholder="Months"
+                type="number"
+                min="0"
+                max="11"
+                value={age.months}
+                onChange={handleAgeChange}
+                className="input"
+                required
+              />
+              <input
+                name="days"
+                placeholder="Days"
+                type="number"
+                min="0"
+                max="30"
+                value={age.days}
+                onChange={handleAgeChange}
+                className="input"
+                required
+              />
               {calculatedDOB && <p className="text-sm">DOB: {calculatedDOB}</p>}
             </div>
           )}
 
+          <div className="form-group">
+            <label className="label">Rewards: {rewards}</label>
+          </div>
+
           <div className="grid-container">
-            <input name="donorID" placeholder="Donor ID" onChange={handleChange} className="input" required />
-            <input name="donorName" placeholder="Donor Name" onChange={handleChange} className="input" required />
+            <select
+              name="donorID"
+              value={formData.donorID}
+              onChange={(e) => {
+                const selectedCustomer = customers.find(
+                  (c) => c._id === e.target.value
+                );
+                handleChange(e); // Update donorID
+                // Update donorName with the selected customer's full name
+                setFormData((prev) => ({
+                  ...prev,
+                  donorName: selectedCustomer
+                    ? `${selectedCustomer.firstname} ${selectedCustomer.lastname}`
+                    : "",
+                }));
+              }}
+              className="input"
+              required
+            >
+              <option value="">Select Donor ID</option>
+              {customers.map((customer) => (
+                <option key={customer._id} value={customer._id}>
+                  {customer.firstname} {customer.lastname} (
+                  {customer.CustomerID})
+                </option>
+              ))}
+            </select>
+            <input
+              name="donorName"
+              placeholder="Donor Name"
+              value={formData.donorName}
+              onChange={handleChange}
+              className="input"
+              required
+              readOnly
+            />
           </div>
 
           <div>
@@ -240,13 +462,19 @@ const PetRegistrationForm = () => {
               value={formData.donatedDate}
               onChange={handleChange}
               className="input"
+              max={dayjs().format("YYYY-MM-DD")}
               required
             />
           </div>
 
           <div className="form-group">
             <label className="label">Health Status:</label>
-            <select name="healthStatus" value={formData.healthStatus} onChange={handleChange} className="select">
+            <select
+              name="healthStatus"
+              value={formData.healthStatus}
+              onChange={handleChange}
+              className="select"
+            >
               <option value="Normal">Normal</option>
               <option value="UnderTreatment">Under Treatments</option>
             </select>
@@ -254,7 +482,12 @@ const PetRegistrationForm = () => {
 
           <div className="form-group">
             <label className="label">Status:</label>
-            <select name="status" value={formData.status} onChange={handleChange} className="select">
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="select"
+            >
               <option value="InCareCenter">In Care Center</option>
               <option value="ReadytoSell">Ready to Sell</option>
               <option value="Auctioned">Auctioned</option>
@@ -266,15 +499,24 @@ const PetRegistrationForm = () => {
 
           <div className="form-group">
             <label>Upload Image:</label>
-            <input type="file" name="image" accept="image/*" onChange={handleChangeImage} />
-            {imagePreview && <img src={imagePreview} alt="Preview" className="preview-img" />}
+            <input
+              type="file"
+              name="image"
+              accept="image/*"
+              onChange={handleChangeImage}
+            />
+            {imagePreview && (
+              <img src={imagePreview} alt="Preview" className="preview-img" />
+            )}
           </div>
 
           <div className="form-group" ref={qrCodeRef}>
             {formData.petId && <QRCode value={formData.petId} size={150} />}
           </div>
 
-          <button type="submit" className="submit-btn">Register Pet</button>
+          <button type="submit" className="submit-btn">
+            Register Pet
+          </button>
         </form>
       </div>
     </div>

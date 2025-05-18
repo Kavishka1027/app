@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navigation from "../navigation/adminNav"
+import Navigation from "../navigation/adminNav";
 
 import axios from "axios";
 import "./userProfile.css";
@@ -18,7 +18,7 @@ const UserProfile = () => {
     }
 
     axios
-      .get(`http://localhost:5000/api/users/${storedUser.id }`)
+      .get(`http://localhost:5000/api/users/${storedUser.id}`)
       .then((res) => {
         setUser(res.data.user);
         console.log(res.data.user);
@@ -30,22 +30,20 @@ const UserProfile = () => {
       });
   }, [navigate]);
 
-
-const getUserId = (role) => {
-  switch (role) {
-    case 1: // Admin
-      return user.AdminID;
-    case 2: // Manager
-      return user.ManagerID;
-    case 3: // Veterinarian
-      return user.VeterinarianID;
-    case 4: // Customer
-      return user.CustomerID;
-    default:
-      return "User ID";
-  }
-};
-
+  const getUserId = (role) => {
+    switch (role) {
+      case 1: // Admin
+        return user.AdminID;
+      case 2: // Manager
+        return user.ManagerID;
+      case 3: // Veterinarian
+        return user.VeterinarianID;
+      case 4: // Customer
+        return user.CustomerID;
+      default:
+        return "User ID";
+    }
+  };
 
   const getRoleDisplayName = (role) => {
     switch (role) {
@@ -113,17 +111,17 @@ const getUserId = (role) => {
 
   return (
     <div className="profile-container">
-        <Navigation/>
+      <Navigation />
       <div className="profile-content">
         <div className="profile-card">
           <div className="profile-header">
-        
-            <h1>User Profile</h1>
-            
+            <h1>My Profile</h1>
           </div>
 
           <div className="profile-body">
+     
             <div className="profile-image-section">
+              <h2 className="detail-label">{user.rewards} Rewards</h2>
               <img
                 src={user.image || "https://via.placeholder.com/300"}
                 alt="User"
@@ -136,7 +134,6 @@ const getUserId = (role) => {
               <p className="profile-role">
                 <p>User ID: {getUserId(user.role)}</p>
                 Role: {getRoleDisplayName(user.role)}
-
               </p>
             </div>
 
@@ -164,7 +161,6 @@ const getUserId = (role) => {
                 <span className="detail-value">{user.gender}</span>
               </div>
               <div className="profile-details">
-              
                 <button
                   onClick={() => handleChangePassword(user.newpassword)}
                   className="change-password-button"
@@ -177,7 +173,6 @@ const getUserId = (role) => {
         </div>
       </div>
     </div>
-
   );
 };
 
