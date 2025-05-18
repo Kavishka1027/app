@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./login.css";
 
 const Login = () => {
@@ -7,6 +7,18 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Redirect to previous page or default if logged in
+  const from = location.state?.from?.pathname || "/availableItems";
+
+  useEffect(() => {
+    const existingUserMongoId = localStorage.getItem("userId");
+    console.log("Existing User ID:", existingUserMongoId);
+    if (existingUserMongoId) {
+      navigate(from, { replace: true });
+    }
+  }, [navigate, from]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,10 +36,13 @@ const Login = () => {
       const data = await response.json();
 
       if (data.status === "ok") {
-        // Store user data in localStorage
-        localStorage.setItem('currentUser', JSON.stringify(data.user));
-        console.log('User logged in:', data.user);
-        navigate(data.redirect); // Redirect to the appropriate dashboard
+        // Save to localStorage
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        localStorage.setItem("userId", data.user.id); // Save userId
+
+
+        // Redirect to original destination
+        navigate(from, { replace: true });
       } else {
         setError(data.err || "Login failed");
       }
@@ -49,14 +64,14 @@ const Login = () => {
 
         {error && <p className="error">{error}</p>}
 
-        <input 
+        <input
           type="text"
           placeholder="User ID"
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
           required
         />
-        <input 
+        <input
           type="password"
           placeholder="Password"
           value={password}

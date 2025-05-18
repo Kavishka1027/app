@@ -44,6 +44,7 @@ import CreatePet from './components/Ecommerce/adminPanel/createPet';
 
 //Ecommerce - User Panel
 import AvailableItems from './components/Ecommerce/userPanel/availableItems';
+import MyCart from './components/Ecommerce/userPanel/myCart';
 
 
 //auction
@@ -72,7 +73,7 @@ const App = () => {
     {path: '/reset-password/:token', element: <ResetPassword /> },
    
     {path: '/dogs', element: <ShowDogs /> },
-    {path: '/dogs/:id', element: <PetProfile/> },
+    {path: '/petProfile/:id', element: <PetProfile/> },
     {path: '/cats', element: <ShowCats /> },
     {path: '/customers', element: <ShowCustomers /> },
     {path: '/veterinarians', element: <ShowVeterinarians /> },
@@ -118,7 +119,8 @@ const App = () => {
 
         //Ecommerce - User Panel
         {path:'/availableItems', element: <AvailableItems />},
-
+        {path:'/myCart', element: <MyCart />},
+        {path: '/session', element: <Session />},
 
 
         //auction
