@@ -148,7 +148,7 @@ function AdminNav() {
                 </li>
                 <li>
                   <Link to="/availableItems" className="nav-link">
-                    item view customer
+                    Available Items
                   </Link>
                 </li>
               </ul>

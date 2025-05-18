@@ -2,22 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./userRegister.css";
 
 const RegisterForm = () => {
-  const [storedUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    const localUser = JSON.parse(localStorage.getItem("currentUser"));
-    setCurrentUser(localUser || { role: 1 }); // fallback to role 1 for testing
-
-    if (localUser?.role === 2) {
-      setFormData((prev) => ({
-        ...prev,
-        role: "4",
-      }));
-    }
-  }, []);
-
   const [formData, setFormData] = useState({
-    role: "",
+    role: "4",
     roleId: "",
     AId: "",
     firstname: "",
@@ -36,7 +22,7 @@ const RegisterForm = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState("");
 
-  const generateRoleId = (role) => {
+  const generateRoleId = () => {
     const now = new Date();
     const timestamp = `${now.getFullYear()}${(now.getMonth() + 1)
       .toString()
@@ -47,34 +33,13 @@ const RegisterForm = () => {
       .getSeconds()
       .toString()
       .padStart(2, "0")}`.slice(-6);
-
-    let prefix = "";
-    switch (parseInt(role)) {
-      case 1:
-        prefix = "ADM";
-        break;
-      case 2:
-        prefix = "MAN";
-        break;
-      case 3:
-        prefix = "VET";
-        break;
-      case 4:
-        prefix = "CUS";
-        break;
-      default:
-        prefix = "USR";
-    }
-
-    return `${prefix}${timestamp}`;
+    return `CUS${timestamp}`;
   };
 
   useEffect(() => {
-    if (formData.role) {
-      const newRoleId = generateRoleId(formData.role);
-      setFormData((prev) => ({ ...prev, roleId: newRoleId }));
-    }
-  }, [formData.role]);
+    const newRoleId = generateRoleId();
+    setFormData((prev) => ({ ...prev, roleId: newRoleId }));
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -124,7 +89,6 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     try {
@@ -132,94 +96,40 @@ const RegisterForm = () => {
         ...formData,
         AId: String(formData.AId),
         phone: Number(formData.phone),
-        role: Number(formData.role),
-        rewards:
-          formData.role === "4" ? Number(formData.rewards || 0) : undefined,
-        AdminID: formData.role === "1" ? formData.roleId : undefined,
-        ManagerID: formData.role === "2" ? formData.roleId : undefined,
-        VeterinarianID: formData.role === "3" ? formData.roleId : undefined,
-        CustomerID: formData.role === "4" ? formData.roleId : undefined,
+        role: 4,
+        rewards: Number(formData.rewards || 0),
+        CustomerID: formData.roleId,
       };
 
-      const checkResponse = await fetch(
-        `http://localhost:5000/api/users/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(submissionData),
-        }
-      );
+      const res = await fetch(`http://localhost:5000/api/users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submissionData),
+      });
 
-      const checkResult = await checkResponse.json();
-      if (!checkResponse.ok) {
-        setError(checkResult.message || "Validation failed");
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result.message || "Registration failed");
         return;
       }
 
-      if (checkResult.exists) {
-        setError(checkResult.message);
-        return;
-      }
-
-      if (checkResponse.status === 201) {
-        alert("Registration successful!");
-        //window.location.href = "/login";
-      } else {
-        setError(checkResult.message || "Registration failed");
-      }
+      alert("Registration successful!");
+      // window.location.href = "/login";
     } catch (err) {
       setError("Error connecting to server");
-    }
-  };
-
-  const getFormTitle = () => {
-    if (formData.role === "3") {
-      return "Veterinarian Registration";
-    } else if (formData.role === "4") {
-      return "Customer Registration";
-    } else {
-      return "User Registration";
     }
   };
 
   return (
     <div className="register-background">
       <div className="register-container">
-        <h2>{getFormTitle()}</h2>
-
+        <h2>Customer Registration</h2>
         <form onSubmit={handleSubmit} className="register-form">
           {error && <div className="error-message">{error}</div>}
 
-       
-          {(storedUser?.role === 1 || true) && (
-            <div className="role-selection">
-              <label>
-                <input
-                  type="radio"
-                  name="role"
-                  value="3"
-                  onChange={handleChange}
-                  checked={formData.role === "3"}
-                  required
-                />
-                Veterinarian
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="role"
-                  value="4"
-                  onChange={handleChange}
-                  checked={formData.role === "4"}
-                  required
-                />
-                Customer
-              </label>
-            </div>
-          )}
-
           <div className="form-group" align="center">
-            <label>Role ID: {formData.roleId}</label>
+            <label>Customer ID: {formData.roleId}</label>
           </div>
 
           <div className="form-group">
@@ -353,17 +263,15 @@ const RegisterForm = () => {
             </div>
           </div>
 
-          {formData.role === "4" && (
-            <div className="form-group">
-              <label>Rewards:</label>
-              <input
-                type="number"
-                name="rewards"
-                value={formData.rewards}
-                onChange={handleChange}
-              />
-            </div>
-          )}
+          <div className="form-group">
+            <label>Rewards:</label>
+            <input
+              type="number"
+              name="rewards"
+              value={formData.rewards}
+              onChange={handleChange}
+            />
+          </div>
 
           <button type="submit" className="submit-button">
             Register

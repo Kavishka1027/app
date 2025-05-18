@@ -1,4 +1,7 @@
 const Pet = require('../models/petModel');
+const QRCode = require('qrcode');
+
+
 
 const addPet = async (req, res) => {
   try {
@@ -15,16 +18,15 @@ const addPet = async (req, res) => {
       donatedDate,
       healthStatus,
       status,
-      qrCode,
-      image,
+      image,           // base-64 sent from client
       ownerId,
       ownerName,
     } = req.body;
 
-    // Optional: sanitize fields
-    const sanitizedQr = qrCode?.replace(/^data:image\/[^;]+;base64,/, '');
+    // ─── sanitize incoming base-64 image (remove data URI header) ───
     const sanitizedImg = image?.replace(/^data:image\/[^;]+;base64,/, '');
 
+    // ─── create & save the pet first (QR needs the _id) ───
     const newPet = new Pet({
       petType,
       dogID: petType === 'Dog' ? dogID : undefined,
@@ -38,12 +40,15 @@ const addPet = async (req, res) => {
       donatedDate,
       healthStatus,
       status,
-      qrCode: sanitizedQr,
       image: sanitizedImg,
       ownerId,
       ownerName,
     });
 
+    await newPet.save();        // _id now exists
+
+    // ─── generate QR with full URL and update the pet ───
+    newPet.qrCode = await makePetQR(newPet);   // base-64 SVG
     await newPet.save();
 
     res.status(201).json({
@@ -58,77 +63,58 @@ const addPet = async (req, res) => {
 
 
 
-//get all pets
 const getAllPets = async (req, res, next) => {
-  let Pets;
   try {
-    Pets = await Pet.find();
+    const pets = await Pet.find();
+
+    if (!pets || pets.length === 0) {
+      return res.status(404).json({ message: "No pets found" });
+    }
+
+    return res.status(200).json({ pets });
   } catch (err) {
-    console.log("Error fetching pets!", err);
-  }
-  if (!Pets) {
-    return res.status(404).json({ message: "No pets found" });
-  }
-  return res.status(200).json({ Pets });
-};
-
-
-//get all dogs
-const getAllDogs = async (req, res) => {
-  try {
-    const dogs = await Pet.find({ petType: 'Dog' });
-
-    if (!dogs.length) {
-      return res.status(200).json({ message: "No dogs found" });
-    }
-
-    return res.status(200).json({ dogs });
-  } catch (error) {
-    console.error("Error fetching dogs:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
+    console.error("Error fetching pets:", err);
+    return res.status(500).json({ message: "Server error while fetching pets" });
   }
 };
 
-//get all cats
-const getAllCats = async (req, res) => {
-  try {
-    const cats = await Pet.find({ petType: 'Cat' });
 
-    if (!cats.length) {
-      return res.status(200).json({ message: "No cats found" });
-    }
 
-    return res.status(200).json({ cats });
-  } catch (error) {
-    console.error("Error fetching cats:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: error.message });
-  }
-};
-
-//get pet by id
+// Get pet by ID
 const getPetById = async (req, res, next) => {
   const id = req.params.id;
 
-  let pet;
   try {
-    pet = await User.findById(id);
+    // Use the Pet model instead of User model
+    const pet = await Pet.findById(id);
+    
+    if (!pet) {
+      return res.status(404).json({ message: "Pet Not Found" });
+    }
+    
+    return res.status(200).json({ pet });
   } catch (err) {
-    console.log("Error fetching pet:", err);
+    console.error("Error fetching pet:", err);
+    return res.status(500).json({ 
+      message: "Failed to fetch pet details", 
+      error: err.message 
+    });
   }
-  if (!pet) {
-    return res.status(404).json({ message: "Pet Not Found" });
-  }
-  return res.status(200).json({ pet });
 };
 
 
+const makePetQR = async (pet) => {
+  const url = `http://localhost:3000/petProfile/${pet._id}`; 
+  try {
+    const qrCodeDataURL = await QRCode.toDataURL(url);
+    return qrCodeDataURL; // base64 string
+  } catch (err) {
+    console.error('QR generation failed:', err);
+    return null;
+  }
+};
+
 exports.addPet = addPet;
 exports.getAllPets = getAllPets;
-exports.getAllDogs = getAllDogs;
-exports.getAllCats = getAllCats;
 exports.getPetById = getPetById;
 

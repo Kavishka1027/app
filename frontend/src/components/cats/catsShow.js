@@ -11,23 +11,24 @@ const CatShow = () => {
   const [healthStatusFilter, setHealthStatusFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isSellingMode, setIsSellingMode] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
-  useEffect(() => {
-    const fetchCats = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/pets/cats");
-        if (response.data.cats) {
-          setCats(response.data.cats);
-          setFilteredCats(response.data.cats);
-        }
-      } catch (error) {
-        console.error("Error fetching cats:", error);
+useEffect(() => {
+  const fetchCats = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/pets");
+      if (response.data.Pets) {
+        const onlyCats = response.data.Pets.filter(pet => pet.petType === "Cat");
+        setCats(onlyCats);
+        setFilteredCats(onlyCats);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching cats:", error);
+    }
+  };
 
-    fetchCats();
-  }, []);
+  fetchCats();
+}, []);
 
   useEffect(() => {
     const lowerSearch = searchTerm.toLowerCase();

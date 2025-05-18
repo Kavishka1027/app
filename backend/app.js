@@ -60,23 +60,21 @@ app.use(express.urlencoded({ limit: "20mb", extended: true }));
 const userRoute = require("./routes/userRoute");
 const petRoute = require("./routes/petRoute");
 const foodItemsRoute = require("./routes/foodItemsRoute");
-const dietPlanRoute = require('./routes/dietPlanRoute');
+//const dietPlanRoute = require('./routes/dietPlanRoute');
 const messageRoute = require("./routes/messageRoute");
 const sellItemRoute = require("./routes/sellItemRoute");
 const authRoute = require("./routes/authRoute");
-const auctionRoute = require('./routes/auctionRoute');
-const cartRoute = require("./routes/cartRoute");
-
+const auctionRoutes = require('./routes/auctionRoute');
+const cartRoute = require('./routes/cartRoute');
 
 app.use("/api/users", userRoute);
 app.use("/api/pets", petRoute);
 app.use("/api/foods", foodItemsRoute);
-app.use('/api/dietPlan', dietPlanRoute);
+//app.use('/api/dietPlan', dietPlanRoute);
 app.use("/api/messages", messageRoute);
 app.use('/api/sellItem', sellItemRoute);
-app.use('/api/auctions', auctionRoute);
+app.use('/api/auctions', auctionRoutes);
 app.use('/api/cart', cartRoute);
-
  
 app.use('/api/auth', authRoute);
 

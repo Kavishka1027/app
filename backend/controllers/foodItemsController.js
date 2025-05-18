@@ -1,29 +1,20 @@
 const FoodItem = require('../models/foodItemsModel');
 
 // Add a new food item
-
 const addFoodItem = async (req, res) => {
   try {
-    const {
-      category,
-      foodId,
-      foodName,
-      caloriesPer100g,
-    } = req.body;
+    const { category, foodId, foodName, caloriesPer100g } = req.body;
 
-    // Validate required fields
-    if (!category || !foodId || !foodName || !caloriesPer100g) {
+    if (!category || !foodId || !foodName || caloriesPer100g == null) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    // Prepare food item data
-    const newFoodItem = new FoodItem({
-      category,
-      foodId,
-      foodName,
-      caloriesPer100g,
-    });
+    const existingFood = await FoodItem.findOne({ foodId });
+    if (existingFood) {
+      return res.status(409).json({ error: "Food item with this ID already exists" });
+    }
 
+    const newFoodItem = new FoodItem({ category, foodId, foodName, caloriesPer100g });
     await newFoodItem.save();
 
     res.status(201).json({
@@ -33,194 +24,153 @@ const addFoodItem = async (req, res) => {
 
   } catch (error) {
     console.error("Error in addFoodItem:", error);
-    res.status(500).json({
-      error: error.message,
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
-
 // Get all food items
-const getAllFoods = async (req, res, next) => {
-  let foods;
+const getAllFoods = async (req, res) => {
   try {
-    foods = await FoodItem.find();
+    const foods = await FoodItem.find();
+    if (!foods || foods.length === 0) {
+      return res.status(404).json({ message: "No foods found" });
+    }
+    res.status(200).json({ foods });
   } catch (err) {
-    console.log("Error fetching foods!", err);
+    console.error("Error fetching foods:", err);
+    res.status(500).json({ error: "Failed to retrieve foods" });
   }
-  
-  if (!foods || foods.length === 0) {
-    return res.status(404).json({ message: "No foods found" });
-  }
-
-  return res.status(200).json({ foods });
 };
 
 // Get all food items by category
 const getAllFoodsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-
     const foods = await FoodItem.find({ category });
-    res.status(200).json(foods);
+
+    if (!foods || foods.length === 0) {
+      return res.status(404).json({ message: "No food items found for this category" });
+    }
+
+    res.status(200).json({ foods });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to retrieve foods by category', error: error.message });
+    console.error("Error fetching foods by category:", error);
+    res.status(500).json({ error: "Failed to retrieve foods by category" });
   }
 };
-
 
 // Get a single food item by its ID
 const getFoodByID = async (req, res) => {
-  const id = req.params.id;
-
-  let food;
   try {
-    food = await FoodItem.findById(id);
-  }catch (err) {
-    console.log("Error fetching food:", err);
-  }
-  if (!food) {
-    return res.status(404).json({ message: 'Food item not found' });
-  }
-  return res.status(200).json({ food });
-};
+    const id = req.params.id;
+    const food = await FoodItem.findById(id);
 
-const getRandomFoods = async (req, res) => {
-  try {
-    const foods = await FoodItem.aggregate([{ $sample: { size: 7 } }]);
-
-    if (!foods || foods.length === 0) {
-      return res.status(404).json({ message: "No food items found" });
+    if (!food) {
+      return res.status(404).json({ message: 'Food item not found' });
     }
 
-    return res.status(200).json({ foods });
+    res.status(200).json({ food });
   } catch (err) {
-    console.error("Error fetching random foods:", err);
-    return res.status(500).json({ message: "Server error" });
+    console.error("Error fetching food:", err);
+    res.status(500).json({ error: "Failed to fetch food item" });
   }
 };
 
-
-
-
-
+// Generate weekly diet plan
 const generateWeeklyDietPlan = async (req, res) => {
+  const { dailyCalories } = req.query;
+
+  if (!dailyCalories) {
+    return res.status(400).json({ message: 'dailyCalories is required' });
+  }
+
   try {
-    const dailyCalories = parseFloat(req.query.dailyCalories);
-    if (!dailyCalories || dailyCalories <= 0) {
-      return res.status(400).json({ message: 'Invalid daily calorie amount' });
+    const allItems = await FoodItem.find();
+
+    // Group by category
+    const categorized = {
+      Meat: [],
+      Vegetables: [],
+      Milk: [],
+      Fruits: [],
+    };
+
+    allItems.forEach(item => {
+      if (categorized[item.category]) {
+        categorized[item.category].push(item);
+      }
+    });
+
+    // Require at least 1 item per category
+    for (const cat of ['Meat', 'Vegetables', 'Milk', 'Fruits']) {
+      if (categorized[cat].length === 0) {
+        return res.status(400).json({ message: `Not enough items in category: ${cat}` });
+      }
     }
 
-    // Caloric distribution
-    const calorieDistribution = {
-      meat: dailyCalories * 0.5,
-      vegetable: dailyCalories * 0.3,
-      milk: dailyCalories * 0.1,
-      fruit: dailyCalories * 0.1,
-    };
+    const dailyPortion = dailyCalories / 4; // 4 categories
+    const plan = [];
 
-    // Fetch all food items by category
-    const allFoods = await FoodItem.find();
-    const categorizedFoods = {
-      meat: allFoods.filter(item => item.category === 'Meat'),
-      vegetable: allFoods.filter(item => item.category === 'Vegetable'),
-      milk: allFoods.filter(item => item.category === 'Milk'),
-      fruit: allFoods.filter(item => item.category === 'Fruit'),
-    };
+    const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const usedMeats = new Set();
-    const dietPlan = [];
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     for (let i = 0; i < 7; i++) {
-      const day = weekdays[i];
+      const dayPlan = [];
 
-      const pickRandom = (list, exclude = []) => {
-        const filtered = list.filter(item => !exclude.includes(item.name));
-        if (filtered.length === 0) return null;
-        return filtered[Math.floor(Math.random() * filtered.length)];
-      };
+      for (const cat of ['Meat', 'Vegetables', 'Milk', 'Fruits']) {
+        const item = getRandomItem(categorized[cat]);
+        const weight = Math.round((dailyPortion / item.caloriesPer100g) * 100); // grams
+        dayPlan.push({
+          category: cat,
+          name: item.foodName,
+          caloriesPer100g: item.caloriesPer100g,
+          weightInGrams: weight
+        });
+      }
 
-      // Meat - avoid duplicates on adjacent days
-      const meat = pickRandom(categorizedFoods.meat, [...usedMeats]);
-      usedMeats.add(meat.name);
-      if (usedMeats.size > categorizedFoods.meat.length - 2) usedMeats.clear(); // reset if close to limit
-
-      const vegetable = pickRandom(categorizedFoods.vegetable);
-      const milk = pickRandom(categorizedFoods.milk);
-      const fruit = pickRandom(categorizedFoods.fruit);
-
-      const calculateWeight = (caloriesNeeded, per100gCal) => {
-        return Math.round((caloriesNeeded / per100gCal) * 100); // in grams
-      };
-
-      const dayPlan = {
-        day,
-        items: [
-          {
-            category: 'Meat',
-            name: meat.name,
-            weightInGrams: calculateWeight(calorieDistribution.meat, meat.caloriesPer100g),
-          },
-          {
-            category: 'Vegetable',
-            name: vegetable.name,
-            weightInGrams: calculateWeight(calorieDistribution.vegetable, vegetable.caloriesPer100g),
-          },
-          {
-            category: 'Milk',
-            name: milk.name,
-            weightInGrams: calculateWeight(calorieDistribution.milk, milk.caloriesPer100g),
-          },
-          {
-            category: 'Fruit',
-            name: fruit.name,
-            weightInGrams: calculateWeight(calorieDistribution.fruit, fruit.caloriesPer100g),
-          },
-        ],
-      };
-
-      dietPlan.push(dayPlan);
+      plan.push({
+        day: days[i],
+        items: dayPlan
+      });
     }
 
-    res.status(200).json({ dietPlan });
+    return res.status(200).json({ dietPlan: plan });
 
   } catch (err) {
-    console.error('Error generating diet plan:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error(err);
+    res.status(500).json({ message: 'Server error generating diet plan' });
   }
 };
 
 
 // Update a food item
 const updateFood = async (req, res) => {
-    
+  try {
     const { category, foodId, foodName, caloriesPer100g } = req.body;
-    const updates = req.params.id;
+    const id = req.params.id;
 
-    let foods;
-    try {
-      foods = await FoodItem.findByIdAndUpdate(updates,{
-        caloriesPer100g: caloriesPer100g,
-        foodName: foodName,
-      });
+    const updatedFood = await FoodItem.findByIdAndUpdate(
+      id,
+      { category, foodId, foodName, caloriesPer100g },
+      { new: true }
+    );
 
-      foods = await foods.save();
-    } catch (err) {
-      console.log("Error updating food:", err);
+    if (!updatedFood) {
+      return res.status(404).json({ message: 'Food item not found for update' });
     }
-    if (!foods) {
-      return res.status(500).json({ message: 'Unable to update food data' });
-    }
-    return res.status(200).json({ foods });
-  };
 
+    return res.status(200).json({ updatedFood });
+  } catch (err) {
+    console.error("Error updating food:", err);
+    res.status(500).json({ error: "Failed to update food item" });
+  }
+};
 
 // Delete a food item
 const deleteFood = async (req, res) => {
   try {
     const { id } = req.params;
-
     const deletedFood = await FoodItem.findByIdAndDelete(id);
 
     if (!deletedFood) {
@@ -229,16 +179,18 @@ const deleteFood = async (req, res) => {
 
     res.status(200).json({ message: 'Food item deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to delete food item', error: error.message });
+    console.error("Error deleting food:", error);
+    res.status(500).json({ error: 'Failed to delete food item' });
   }
 };
 
-
-exports.addFoodItem = addFoodItem;
-exports.getAllFoods = getAllFoods;
-exports.getAllFoodsByCategory = getAllFoodsByCategory;
-exports.getFoodByID = getFoodByID;
-exports.updateFood = updateFood;
-exports.deleteFood = deleteFood;
-exports.generateWeeklyDietPlan = generateWeeklyDietPlan;
-exports.getRandomFoods = getRandomFoods
+// Export all controller methods
+module.exports = {
+  addFoodItem,
+  getAllFoods,
+  getAllFoodsByCategory,
+  getFoodByID,
+  updateFood,
+  deleteFood,
+  generateWeeklyDietPlan,
+};

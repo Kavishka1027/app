@@ -1,17 +1,23 @@
-const Cart = require('../models/Cart');
-const SellItem = require('../models/SellItem'); // Assuming this is your product model
+const Cart = require('../models/cartModel');
+const SellItem = require('../models/sellItemModel'); // Assuming this is your product model
 
-// Get current user's cart
-exports.getCart = async (req, res) => {
+const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.params.userId, status: 'active' });
-    if (!cart) return res.status(200).json({ items: [] });
-    res.json(cart);
+    const userId = req.params.userId;
+
+    const cart = await Cart.findOne({ userId, status: 'active' }).populate('items.itemId');
+
+    if (!cart) {
+      return res.status(200).json({ items: [], status: 'active', userId });
+    } 
+
+    res.status(200).json(cart);
   } catch (err) {
+    console.error('Error fetching cart:', err);
     res.status(500).json({ message: 'Error fetching cart', error: err.message });
   }
 };
-
+ 
 // Add item to cart
 exports.addToCart = async (req, res) => {
   const { userId, itemId, orderQuantity } = req.body;
@@ -130,3 +136,6 @@ exports.placeOrder = async (req, res) => {
     res.status(500).json({ message: 'Error placing order', error: err.message });
   }
 };
+
+
+exports.getCart = getCart;

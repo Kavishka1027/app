@@ -9,6 +9,14 @@ const Home = () => {
   const backgroundImages = [`url(${sdog})`, `url(${scat})`];
 
   useEffect(() => {
+    // Clear all localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Add any additional context clearing logic here if you're using React Context
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBgIndex((prevIndex) =>
         prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
@@ -16,7 +24,7 @@ const Home = () => {
     }, 8000);
 
     return () => clearInterval(interval);
-  }); // Add empty dependency array
+  }, [backgroundImages.length]);
 
   return (
     <div className="pet-website">
@@ -35,36 +43,21 @@ const Home = () => {
           </Link>
         </div>
         <ul className="nav-links">
-          <li>
-            <a href="#home">Home</a>
-          </li>
-          <li>
-            <a href="#services">Services</a>
-          </li>
-          <li>
-            <a href="#about">About</a>
-          </li>
-          <li>
-            <a href="#gallery">Gallery</a>
-          </li>
-          <li>
-            <a href="#contact">Contact</a>
-          </li>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#gallery">Gallery</a></li>
+          <li><a href="#contact">Contact</a></li>
         </ul>
       </nav>
 
       <section className="hero" id="home">
         <div className="hero-content">
           <h1>WET SNOUT Pet Caring Company</h1>
-
           <p>Professional pet care services with love and compassion</p>
           <div className="hero-buttons">
-            <Link to="/userRegister" className="cta-button">
-              Register
-            </Link>
-            <Link to="/login" className="cta-button">
-              Login
-            </Link>
+            <Link to="/userRegister" className="cta-button">Register</Link>
+            <Link to="/login" className="cta-button">Login</Link>
           </div>
         </div>
       </section>
@@ -89,17 +82,16 @@ const Home = () => {
               <h3>Veterinary Service</h3>
               <p>Expert care to keep your furry friends healthy and strong</p>
             </div>
-            <div className="card">
+            <Link to="/availableItems" className="card">
               <div className="icon">🛒</div>
               <h3>Online Store</h3>
-              <p>hop everything your pet loves — treats, toys, and more!</p>
-            </div>
+              <p>Shop everything your pet loves — treats, toys, and more!</p>
+            </Link>
             <div className="card">
               <div className="icon">🥗</div>
               <h3>Diet Plans</h3>
               <p>
-                Nutritious meal plans tailored for your pet’s health and
-                happiness
+                Nutritious meal plans tailored for your pet’s health and happiness
               </p>
             </div>
           </div>
@@ -111,62 +103,15 @@ const Home = () => {
         <div className="section-container">
           <h2>Our Happy Pets</h2>
           <div className="gallery-grid">
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1522276498395-f4f68f7f8454?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1522276498395-f4f68f7f8454?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
-            <div
-              className="gallery-item"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1494256997604-768d1f608cac?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')",
-              }}
-            ></div>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((_, i) => (
+              <div
+                key={i}
+                className="gallery-item"
+                style={{
+                  backgroundImage: `url('https://images.unsplash.com/photo-1586671267731-da2cf3ceeb80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80')`,
+                }}
+              ></div>
+            ))}
           </div>
         </div>
       </section>
@@ -189,7 +134,7 @@ const Home = () => {
               <h3>Follow Us</h3>
               <div className="social-icons">
                 <a href="#facebook">Facebook</a>
-                <a href="#instagram">Instegram</a>
+                <a href="#instagram">Instagram</a>
                 <a href="#twitter">Twitter</a>
               </div>
             </div>

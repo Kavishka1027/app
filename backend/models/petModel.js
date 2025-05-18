@@ -27,7 +27,7 @@ const petSchema = new Schema({
   },
 
   name: {
-    type: String,
+    type: String, 
     required: true,
   },
 
