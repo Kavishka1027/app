@@ -2,7 +2,7 @@ const Auction = require('../models/auctionModel');
 const Pet = require('../models/petModel');
 const User = require('../models/userModel'); // Assuming you have a user model
 
-// Create a new auction
+// Create a new auction system
 exports.createAuction = async (req, res) => {
   try {
     const { petId, startingPrice, durationDays } = req.body;
